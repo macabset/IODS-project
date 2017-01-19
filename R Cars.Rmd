@@ -1,0 +1,2 @@
+This is the first attempt to link R Markdown, RStudio and GitHub. Step by step instructions are exceptionally good! And questions are answered quickly and clearly.
+https://macabset.github.io/IODS-project/
