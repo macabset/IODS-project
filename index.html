@@ -141,24 +141,137 @@ $(document).ready(function () {
 <div id="TOC">
 <ul>
 <li><a href="#about-the-project">About the project</a></li>
-<li><a href="#insert-chapter-2-title-here">Insert chapter 2 title here</a></li>
+<li><a href="#regression-analysis---why-attitude-matters">Regression analysis - why attitude matters</a></li>
+<li><a href="#part-1-is-the-data-wrangling-exercise-which-doesnt-show-on-my-course-diary.-if-you-are-interested-go-and-check-in-my-github-httpsgithub.commacabsetiods-projectblobmasterdatacreate_learning2014.r">Part 1 is the data wrangling exercise, which doesn’t show on my course diary. If you are interested, go and check in my github: <a href="https://github.com/macabset/IODS-project/blob/master/data/create_learning2014.R" class="uri">https://github.com/macabset/IODS-project/blob/master/data/create_learning2014.R</a></a></li>
+<li><a href="#part-2-analysis-max-15p">Part 2: Analysis (max 15p)</a></li>
+<li><a href="#exploring-our-dataset">2.1: Exploring our dataset</a></li>
+<li><a href="#here-you-can-see-the-learning2014-dataset-whih-has-7-variables-with-166-observations.">Here you can see the learning2014 dataset, whih has 7 variables with 166 observations.</a></li>
+<li><a href="#this-questionnary-conserning-studentss-approaches-to-learning-has-been-collected-from-course-introduction-to-social-statistics-fall-2014-finnish">This questionnary conserning students’s approaches to learning has been collected from course:&quot; Introduction to Social Statistics, fall 2014&quot; (Finnish)</a></li>
+<li><a href="#dataset-has-been-modified-so-that-questions-have-been-combined-and-point-values-of-0-have-been-removed.">Dataset has been modified so that questions have been combined and point values of 0 have been removed.</a></li>
+<li><a href="#in-our-summary-we-can-see-that-all-variables-except-gender-are-numeric-with-continuous-values.">In our summary we can see that all variables except gender are numeric with continuous values.</a></li>
+<li><a href="#picturing-our-dataset">2.2 Picturing our dataset</a></li>
+<li><a href="#figure-1-shows-us-how-attitude-towards-statistics-correlate-to-the-points-for-the-exam.-in-this-case-such-in-many-others-motivation-explains-partly-success.">Figure 1 shows us how attitude towards statistics correlate to the points for the exam. In this case, such in many others, motivation explains partly success.</a></li>
+<li><a href="#extra-combinig-strategic-learning-to-points.">EXTRA: Combinig strategic learning to points.</a></li>
+<li><a href="#regression-model">2.3 Regression model</a></li>
+<li><a href="#choosing-explaining-variables">Choosing explaining variables</a></li>
+<li><a href="#as-we-can-see-in-our-plot-matrix-variables-attitude-stra-and-surf-correlate-the-most-with-points.-lets-try-those-as-explanatory-values-in-our-regression-model.">As we can see in our plot matrix, variables attitude, stra and surf correlate the most with points. Lets try those as explanatory values in our regression model.</a></li>
+<li><a href="#explaining-points-with-attitudestrategic-and-surface-learning">Explaining points with attitude,strategic and surface learning</a></li>
+<li><a href="#attitude-seems-to-be-the-only-one-statistically-significant-in-explaining-points.-this-result-is-compatitive-with-our-result-in-figure-2-where-correlation-between-strategic-learning-and-points-was-bearly-noticeable.">Attitude seems to be the only one statistically significant in explaining points. This result is compatitive with our result in Figure 2, where correlation between strategic learning and points was bearly noticeable.</a></li>
+<li><a href="#lets-remove-first-surf-and-see-again-our-model">Let’s remove first surf and see again our model</a></li>
+<li><a href="#the-strategic-learning-gives-still-too-high-p-value-so-we-cannot-exclude-it-being-significant-by-chance.">The strategic learning gives still too high p-value, so we cannot exclude it being significant by chance.</a></li>
+<li><a href="#lets-try-our-regression-model-with-only-attitude-explaining-it.">Let’s try our regression model with only attitude explaining it.</a></li>
+<li><a href="#it-seems-that-attitude-towards-statistics-is-our-key-explanatory-variable-to-exam-points.-the-more-positive-attitude-toward-statistics-in-general-the-better-outcome-in-exam.">It seems that attitude towards statistics is our key explanatory variable to exam points. The more positive attitude toward statistics in general the better outcome in exam.</a></li>
+<li><a href="#interpreting-r-squared">2.4 Interpreting R-squared</a></li>
+<li><a href="#then-we-should-look-at-our-r-squared-values-to-see-how-well-our-model-fits-to-our-observations.">Then we should look at our R-squared values to see how well our model fits to our observations.</a></li>
+<li><a href="#our-3-tests-of-regression-model-show-that-our-multiple-r-squared-lowers-each-time-we-drop-a-variable.-that-happens-because-it-increases-every-time-you-add-a-variable.">Our 3 tests of regression model show that our Multiple R-squared lowers each time we drop a variable. That happens, because it increases every time you add a variable.</a></li>
+<li><a href="#what-we-also-see-is-that-the-2nd-test-has-the-highest-adjusted-r-square-even-though-it-has-more-variables-than-the-last-one.">What we also see is that the 2nd test has the highest adjusted R-square, even though it has more variables than the last one.</a></li>
+<li><a href="#i-conclude-that-we-still-should-consider-bringing-back-strategic-learning-to-our-multiple-regression-model-even-though-its-p-value-is-over-magical-line-of-0.05.">I conclude that we still should consider bringing back strategic learning to our multiple regression model, even though its p-value is over magical line of 0.05.</a></li>
+<li><a href="#errors-in-our-model">2.5 Errors in our model</a></li>
+<li><a href="#lets-check-residuals-vs-fitted-values-normal-qq-plot-and-residuals-vs-leverage.">Let’s check Residuals vs Fitted values, Normal QQ-plot and Residuals vs Leverage.</a></li>
+<li><a href="#to-conclude-our-regression-model-2-with-explanatory-variables-attitude-and-strategic-learning-exam-points-are-explained-with-linear-model.-considering-the-r-squared-and-checking-with-residuals-it-indeed-seems-that-the-2nd-regression-model-best-explains-points.-that-means-the-more-positive-attitude-and-the-more-strategically-you-wish-to-learn-statistics-the-better-outcome-you-get-from-statistics-exam.">To conclude: our regression model 2, with explanatory variables attitude and strategic learning, exam points are explained with linear model. Considering the r-squared and checking with residuals, it indeed seems that the 2nd regression model best explains points. That means the more positive attitude and the more strategically you wish to learn statistics, the better outcome you get from statistics exam.</a></li>
 </ul>
 </div>
 
 <hr />
 <div id="about-the-project" class="section level1">
 <h1>About the project</h1>
-<p><em>Write a short description about the course and add a link to your github repository here. This is an R markdown (.Rmd) file so you can use R markdown syntax. See the ‘Useful links’ page in the mooc area (chapter 1) for instructions.</em> ## This is an Open Data Science course for learning R and analysing and presenting data. ## <a href="https://github.com/macabset/IODS-project" class="uri">https://github.com/macabset/IODS-project</a></p>
+<p><em>Write a short description about the course and add a link to your github repository here. This is an R markdown (.Rmd) file so you can use R markdown syntax. See the ‘Useful links’ page in the mooc area (chapter 1) for instructions.</em> # This is an Open Data Science course for learning R and analysing and presenting data. #Link to my Github repository: <a href="https://github.com/macabset/IODS-project" class="uri">https://github.com/macabset/IODS-project</a></p>
 <hr />
 </div>
-<div id="insert-chapter-2-title-here" class="section level1">
-<h1>Insert chapter 2 title here</h1>
-<p><em>Describe the work you have done this week and summarize your learning.</em></p>
-<ul>
-<li>Describe your work and results clearly.</li>
-<li>Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods</li>
-<li>Assume the reader has no previous knowledge of your data or the more advanced methods you are using</li>
-</ul>
+<div id="regression-analysis---why-attitude-matters" class="section level1">
+<h1>Regression analysis - why attitude matters</h1>
+<p><em>This week I have completed DataCamp exercises, peer reviewed Rstudio excersice 1 and surprisingly enough learned for the first time to create regression model in RStudio excercise 2. This has been an excellent opportunity to learn to interpret regression model many-sidedly and thoroughly.</em></p>
+</div>
+<div id="part-1-is-the-data-wrangling-exercise-which-doesnt-show-on-my-course-diary.-if-you-are-interested-go-and-check-in-my-github-httpsgithub.commacabsetiods-projectblobmasterdatacreate_learning2014.r" class="section level1">
+<h1>Part 1 is the data wrangling exercise, which doesn’t show on my course diary. If you are interested, go and check in my github: <a href="https://github.com/macabset/IODS-project/blob/master/data/create_learning2014.R" class="uri">https://github.com/macabset/IODS-project/blob/master/data/create_learning2014.R</a></h1>
+</div>
+<div id="part-2-analysis-max-15p" class="section level1">
+<h1>Part 2: Analysis (max 15p)</h1>
+</div>
+<div id="exploring-our-dataset" class="section level1">
+<h1>2.1: Exploring our dataset</h1>
+<p>str(lrn2014) dim(lrn2014)</p>
+</div>
+<div id="here-you-can-see-the-learning2014-dataset-whih-has-7-variables-with-166-observations." class="section level1">
+<h1>Here you can see the learning2014 dataset, whih has 7 variables with 166 observations.</h1>
+</div>
+<div id="this-questionnary-conserning-studentss-approaches-to-learning-has-been-collected-from-course-introduction-to-social-statistics-fall-2014-finnish" class="section level1">
+<h1>This questionnary conserning students’s approaches to learning has been collected from course:&quot; Introduction to Social Statistics, fall 2014&quot; (Finnish)</h1>
+</div>
+<div id="dataset-has-been-modified-so-that-questions-have-been-combined-and-point-values-of-0-have-been-removed." class="section level1">
+<h1>Dataset has been modified so that questions have been combined and point values of 0 have been removed.</h1>
+<p>summary(lrn2014) install.packages(“ggplot2”) library(ggplot2)</p>
+</div>
+<div id="in-our-summary-we-can-see-that-all-variables-except-gender-are-numeric-with-continuous-values." class="section level1">
+<h1>In our summary we can see that all variables except gender are numeric with continuous values.</h1>
+</div>
+<div id="picturing-our-dataset" class="section level1">
+<h1>2.2 Picturing our dataset</h1>
+<p>A &lt;- ggplot(lrn2014, aes(x= attitude, y=points, col=gender)) B &lt;- A +geom_point() C &lt;- B + geom_smooth(method = “lm”)</p>
+<p>Figure1 &lt;- C + ggtitle(“The relationship between attitude and points”) Figure1</p>
+</div>
+<div id="figure-1-shows-us-how-attitude-towards-statistics-correlate-to-the-points-for-the-exam.-in-this-case-such-in-many-others-motivation-explains-partly-success." class="section level1">
+<h1>Figure 1 shows us how attitude towards statistics correlate to the points for the exam. In this case, such in many others, motivation explains partly success.</h1>
+</div>
+<div id="extra-combinig-strategic-learning-to-points." class="section level1">
+<h1>EXTRA: Combinig strategic learning to points.</h1>
+<p>D &lt;- ggplot(lrn2014, aes(x=stra, y=points, col=gender)) D1 &lt;- D + geom_point() D2 &lt;- D1 + geom_smooth(method=“lm”) Figure2 &lt;- D2 + ggtitle(“The relationship between strategic learning and points”) Figure2 #If we look at Figure 2 there seems to be very small linear relationship between strategic learning and exam points. If student used strategic learning method in general, he or she might have gained a bit better exam points.</p>
+</div>
+<div id="regression-model" class="section level1">
+<h1>2.3 Regression model</h1>
+</div>
+<div id="choosing-explaining-variables" class="section level1">
+<h1>Choosing explaining variables</h1>
+<p>install.packages(“GGally”) library(GGally) ggpairs(lrn2014, lower= list(combo = wrap(“facethist”, bins = 20)))</p>
+</div>
+<div id="as-we-can-see-in-our-plot-matrix-variables-attitude-stra-and-surf-correlate-the-most-with-points.-lets-try-those-as-explanatory-values-in-our-regression-model." class="section level1">
+<h1>As we can see in our plot matrix, variables attitude, stra and surf correlate the most with points. Lets try those as explanatory values in our regression model.</h1>
+</div>
+<div id="explaining-points-with-attitudestrategic-and-surface-learning" class="section level1">
+<h1>Explaining points with attitude,strategic and surface learning</h1>
+<p>my_reg &lt;- lm(points ~ attitude + stra + surf, data = lrn2014 ) summary(my_reg)</p>
+</div>
+<div id="attitude-seems-to-be-the-only-one-statistically-significant-in-explaining-points.-this-result-is-compatitive-with-our-result-in-figure-2-where-correlation-between-strategic-learning-and-points-was-bearly-noticeable." class="section level1">
+<h1>Attitude seems to be the only one statistically significant in explaining points. This result is compatitive with our result in Figure 2, where correlation between strategic learning and points was bearly noticeable.</h1>
+</div>
+<div id="lets-remove-first-surf-and-see-again-our-model" class="section level1">
+<h1>Let’s remove first surf and see again our model</h1>
+<p>my_reg2 &lt;- lm(points ~ attitude + stra, data = lrn2014) summary(my_reg2)</p>
+</div>
+<div id="the-strategic-learning-gives-still-too-high-p-value-so-we-cannot-exclude-it-being-significant-by-chance." class="section level1">
+<h1>The strategic learning gives still too high p-value, so we cannot exclude it being significant by chance.</h1>
+</div>
+<div id="lets-try-our-regression-model-with-only-attitude-explaining-it." class="section level1">
+<h1>Let’s try our regression model with only attitude explaining it.</h1>
+<p>my_reg3 &lt;- lm(points ~ attitude, data=lrn2014) summary(my_reg3)</p>
+</div>
+<div id="it-seems-that-attitude-towards-statistics-is-our-key-explanatory-variable-to-exam-points.-the-more-positive-attitude-toward-statistics-in-general-the-better-outcome-in-exam." class="section level1">
+<h1>It seems that attitude towards statistics is our key explanatory variable to exam points. The more positive attitude toward statistics in general the better outcome in exam.</h1>
+</div>
+<div id="interpreting-r-squared" class="section level1">
+<h1>2.4 Interpreting R-squared</h1>
+</div>
+<div id="then-we-should-look-at-our-r-squared-values-to-see-how-well-our-model-fits-to-our-observations." class="section level1">
+<h1>Then we should look at our R-squared values to see how well our model fits to our observations.</h1>
+</div>
+<div id="our-3-tests-of-regression-model-show-that-our-multiple-r-squared-lowers-each-time-we-drop-a-variable.-that-happens-because-it-increases-every-time-you-add-a-variable." class="section level1">
+<h1>Our 3 tests of regression model show that our Multiple R-squared lowers each time we drop a variable. That happens, because it increases every time you add a variable.</h1>
+</div>
+<div id="what-we-also-see-is-that-the-2nd-test-has-the-highest-adjusted-r-square-even-though-it-has-more-variables-than-the-last-one." class="section level1">
+<h1>What we also see is that the 2nd test has the highest adjusted R-square, even though it has more variables than the last one.</h1>
+</div>
+<div id="i-conclude-that-we-still-should-consider-bringing-back-strategic-learning-to-our-multiple-regression-model-even-though-its-p-value-is-over-magical-line-of-0.05." class="section level1">
+<h1>I conclude that we still should consider bringing back strategic learning to our multiple regression model, even though its p-value is over magical line of 0.05.</h1>
+</div>
+<div id="errors-in-our-model" class="section level1">
+<h1>2.5 Errors in our model</h1>
+</div>
+<div id="lets-check-residuals-vs-fitted-values-normal-qq-plot-and-residuals-vs-leverage." class="section level1">
+<h1>Let’s check Residuals vs Fitted values, Normal QQ-plot and Residuals vs Leverage.</h1>
+<p>?plot.lm errors &lt;- plot(my_reg2, which= c(1,2,5), par(mfrow= c(2,2))) #In plot 1 we see, that values are reaasonably well scattered through out the area, which means that errors make no pattern, as is expected from a good model. #In plot 2 we see, that the errors seem to be normally distributed, which is consistent with our assumption, atlhough our model is less suitable in the both ends of values. #In plot 3 we see, that no single observation has too much weight on the model.</p>
+</div>
+<div id="to-conclude-our-regression-model-2-with-explanatory-variables-attitude-and-strategic-learning-exam-points-are-explained-with-linear-model.-considering-the-r-squared-and-checking-with-residuals-it-indeed-seems-that-the-2nd-regression-model-best-explains-points.-that-means-the-more-positive-attitude-and-the-more-strategically-you-wish-to-learn-statistics-the-better-outcome-you-get-from-statistics-exam." class="section level1">
+<h1>To conclude: our regression model 2, with explanatory variables attitude and strategic learning, exam points are explained with linear model. Considering the r-squared and checking with residuals, it indeed seems that the 2nd regression model best explains points. That means the more positive attitude and the more strategically you wish to learn statistics, the better outcome you get from statistics exam.</h1>
 <hr />
 </div>
 

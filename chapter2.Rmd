@@ -1,7 +1,87 @@
-# Insert chapter 2 title here
+# Regression analysis - why attitude matters
 
-*Describe the work you have done this week and summarize your learning.*
+*This week I have completed DataCamp exercises, peer reviewed Rstudio excersice 1 and surprisingly enough learned for the first time to create regression model in RStudio excercise 2. This has been an excellent opportunity to learn to interpret regression model many-sidedly and thoroughly.*
 
-- Describe your work and results clearly. 
-- Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods
-- Assume the reader has no previous knowledge of your data or the more advanced methods you are using  
+#Part 1 is the data wrangling exercise, which doesn't show on my course diary. If you are interested, go and check in my github: https://github.com/macabset/IODS-project/blob/master/data/create_learning2014.R
+
+
+#Part 2: Analysis (max 15p)
+#2.1: Exploring our dataset
+
+str(lrn2014)
+dim(lrn2014)
+
+# Here you can see the learning2014 dataset, whih has 7 variables with 166 observations. 
+#This questionnary conserning students's approaches to learning has been collected from course:" Introduction to Social Statistics, fall 2014" (Finnish)
+#Dataset has been modified so that questions have been combined and point values of 0 have been removed.
+
+summary(lrn2014)
+install.packages("ggplot2")
+library(ggplot2)
+
+#In our summary we can see that all variables except gender are numeric with continuous values.
+
+#2.2 Picturing our dataset
+
+A <- ggplot(lrn2014, aes(x= attitude, y=points, col=gender))
+B <- A +geom_point()
+C <- B + geom_smooth(method = "lm")
+
+Figure1 <- C + ggtitle("The relationship between attitude and points")
+Figure1
+
+# Figure 1 shows us how attitude towards statistics correlate to the points for the exam. In this case, such in many others, motivation explains partly success.
+
+
+#EXTRA: Combinig strategic learning to points.
+D <- ggplot(lrn2014, aes(x=stra, y=points, col=gender))
+D1 <- D + geom_point()
+D2 <- D1 + geom_smooth(method="lm")
+Figure2 <- D2 + ggtitle("The relationship between strategic learning and points")
+Figure2
+#If we look at Figure 2 there seems to be very small linear relationship between strategic learning and exam points. If student used strategic learning method in general, he or she might have gained a bit better exam points.
+
+#2.3 Regression model
+#Choosing explaining variables
+install.packages("GGally")
+library(GGally)
+ggpairs(lrn2014, lower= list(combo = wrap("facethist", bins = 20)))
+
+#As we can see in our plot matrix, variables attitude, stra and surf correlate the most with points. Lets try those as explanatory values in our regression model.
+
+#Explaining points with attitude,strategic and surface learning
+
+my_reg <- lm(points ~ attitude + stra + surf, data = lrn2014 )
+summary(my_reg)
+
+#Attitude seems to be the only one statistically significant in explaining points. This result is compatitive with our result in Figure 2, where correlation between strategic learning and points was bearly noticeable.
+#Let's remove first surf and see again our model
+
+my_reg2 <- lm(points ~ attitude + stra, data = lrn2014)
+summary(my_reg2)
+
+#The strategic learning gives still too high p-value, so we cannot exclude it being significant by chance.
+#Let's try our regression model with only attitude explaining it.
+
+my_reg3 <- lm(points ~ attitude, data=lrn2014)
+summary(my_reg3)
+
+#It seems that attitude towards statistics is our key explanatory variable to exam points. The more positive attitude toward statistics in general the better outcome in exam.
+
+# 2.4 Interpreting R-squared
+#Then we should look at our R-squared values to see how well our model fits to our observations.
+#Our 3 tests of regression model show that our Multiple R-squared lowers each time we drop a variable. That happens, because it increases every time you add a variable.
+#What we also see is that the 2nd test has the highest adjusted R-square, even though it has more variables than the last one.
+# I conclude that we still should consider bringing back strategic learning to our multiple regression model, even though its p-value is over magical line of 0.05.
+
+#2.5 Errors in our model
+#Let's check Residuals vs Fitted values, Normal QQ-plot and Residuals vs Leverage.
+?plot.lm
+errors <- plot(my_reg2, which= c(1,2,5), par(mfrow= c(2,2)))
+#In plot 1 we see, that values are reaasonably well scattered through out the area, which means that errors make no pattern, as is expected from a good model.
+#In plot 2 we see, that the errors seem to be normally distributed, which is consistent with our assumption, atlhough our model is less suitable in the both ends of values.
+#In plot 3 we see, that no single observation has too much weight on the model.
+
+#To conclude: our regression model 2, with explanatory variables attitude and strategic learning, exam points are explained with linear model. Considering the r-squared and checking with residuals, it indeed seems that the 2nd regression model best explains points. That means the more positive attitude and the more strategically you wish to learn statistics, the better outcome you get from statistics exam.
+
+
