@@ -5,6 +5,11 @@
 #Part 1 
 is the data wrangling exercise, which doesn't show on my course diary. If you are interested, go and check in my github: https://github.com/macabset/IODS-project/blob/master/data/create_learning2014.R
 
+```{r learning2014}
+lrn2014 <- read.csv("learning2014.csv")
+lrn2014
+str(lrn2014)
+```
 
 #Part 2: Analysis (max 15p)
 #2.1: Exploring our dataset
