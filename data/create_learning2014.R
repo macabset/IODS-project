@@ -55,8 +55,8 @@ sub_learn14 <- filter(sub_learn14, points >! 0)
 
 ?write.csv
 
-write.csv(sub_learn14, file = "learning2014.csv", row.names = FALSE)
-lrn2014 <- read.csv("learning2014.csv")
+write.csv(sub_learn14, file = "C:/Users/Murmeli/Documents/GitHub/IODS-project/data/learning2014.csv", row.names = FALSE)
+lrn2014 <- read.csv("C:/Users/Murmeli/Documents/GitHub/IODS-project/data/learning2014.csv")
 
 head(lrn2014)
 
