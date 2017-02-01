@@ -5,10 +5,34 @@
 #Part 1 
 is the data wrangling exercise, which doesn't show on my course diary. If you are interested, go and check in my github: https://github.com/macabset/IODS-project/blob/master/data/create_learning2014.R
 
-```{r learning2014}
-lrn2014 <- read.csv("learning2014.csv")
-lrn2014
-str(lrn2014)
+```{r}
+full_learn14<- read.table( "http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-data.txt", sep="\t", header=TRUE)
+library(dplyr)
+
+deep_questions <- c("D03", "D11", "D19", "D27", "D07", "D14", "D22", "D30","D07","D14","D22","D30")
+surface_questions <- c("SU02","SU10","SU18","SU26", "SU05","SU13","SU21","SU29","SU08","SU16","SU24","SU32")
+strategic_questions <- c("ST01","ST09","ST17","ST25","ST04","ST12","ST20","ST28")
+deep_columns <- select(full_learn14, one_of(deep_questions))
+full_learn14$deep <- rowMeans(deep_columns)
+surface_columns <- select(full_learn14, one_of(surface_questions))
+full_learn14$surf <- rowMeans(surface_columns)
+strategic_columns <- select(full_learn14, one_of(strategic_questions))
+full_learn14$stra <- rowMeans(strategic_columns)
+New_columns <- c("gender","Age","Attitude", "deep", "stra", "surf", "Points")
+sub_learn14 <- select(full_learn14, one_of(New_columns))
+colnames(sub_learn14)[2] <- "age"
+colnames(sub_learn14)[3] <- "attitude"
+colnames(sub_learn14)[7]<- "points"
+colnames(sub_learn14)
+str(sub_learn14)
+
+sub_learn14 <- filter(sub_learn14, points >! 0)
+
+
+write.csv(sub_learn14, file = "C:/Users/Murmeli/Documents/GitHub/IODS-project/data/learning2014.csv", row.names = FALSE)
+lrn2014 <- read.csv("C:/Users/Murmeli/Documents/GitHub/IODS-project/data/learning2014.csv")
+
+head(lrn2014)
 ```
 
 #Part 2: Analysis (max 15p)
