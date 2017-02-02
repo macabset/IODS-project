@@ -5,7 +5,7 @@
 ##Part 1 
 is the data wrangling exercise, which doesn't show on my course diary. If you are interested, go and check in my github: https://github.com/macabset/IODS-project/blob/master/data/create_learning2014.R
 
-```{r}
+```{r,echo=FALSE}
 full_learn14<- read.table( "http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-data.txt", sep="\t", header=TRUE)
 library(dplyr)
 

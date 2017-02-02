@@ -160,8 +160,6 @@ $(document).ready(function () {
 <div id="part-1" class="section level2">
 <h2>Part 1</h2>
 <p>is the data wrangling exercise, which doesn’t show on my course diary. If you are interested, go and check in my github: <a href="https://github.com/macabset/IODS-project/blob/master/data/create_learning2014.R" class="uri">https://github.com/macabset/IODS-project/blob/master/data/create_learning2014.R</a></p>
-<pre class="r"><code>full_learn14&lt;- read.table( &quot;http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-data.txt&quot;, sep=&quot;\t&quot;, header=TRUE)
-library(dplyr)</code></pre>
 <pre><code>## 
 ## Attaching package: 'dplyr'</code></pre>
 <pre><code>## The following objects are masked from 'package:stats':
@@ -170,24 +168,8 @@ library(dplyr)</code></pre>
 <pre><code>## The following objects are masked from 'package:base':
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>deep_questions &lt;- c(&quot;D03&quot;, &quot;D11&quot;, &quot;D19&quot;, &quot;D27&quot;, &quot;D07&quot;, &quot;D14&quot;, &quot;D22&quot;, &quot;D30&quot;,&quot;D07&quot;,&quot;D14&quot;,&quot;D22&quot;,&quot;D30&quot;)
-surface_questions &lt;- c(&quot;SU02&quot;,&quot;SU10&quot;,&quot;SU18&quot;,&quot;SU26&quot;, &quot;SU05&quot;,&quot;SU13&quot;,&quot;SU21&quot;,&quot;SU29&quot;,&quot;SU08&quot;,&quot;SU16&quot;,&quot;SU24&quot;,&quot;SU32&quot;)
-strategic_questions &lt;- c(&quot;ST01&quot;,&quot;ST09&quot;,&quot;ST17&quot;,&quot;ST25&quot;,&quot;ST04&quot;,&quot;ST12&quot;,&quot;ST20&quot;,&quot;ST28&quot;)
-deep_columns &lt;- select(full_learn14, one_of(deep_questions))
-full_learn14$deep &lt;- rowMeans(deep_columns)
-surface_columns &lt;- select(full_learn14, one_of(surface_questions))
-full_learn14$surf &lt;- rowMeans(surface_columns)
-strategic_columns &lt;- select(full_learn14, one_of(strategic_questions))
-full_learn14$stra &lt;- rowMeans(strategic_columns)
-New_columns &lt;- c(&quot;gender&quot;,&quot;Age&quot;,&quot;Attitude&quot;, &quot;deep&quot;, &quot;stra&quot;, &quot;surf&quot;, &quot;Points&quot;)
-sub_learn14 &lt;- select(full_learn14, one_of(New_columns))
-colnames(sub_learn14)[2] &lt;- &quot;age&quot;
-colnames(sub_learn14)[3] &lt;- &quot;attitude&quot;
-colnames(sub_learn14)[7]&lt;- &quot;points&quot;
-colnames(sub_learn14)</code></pre>
 <pre><code>## [1] &quot;gender&quot;   &quot;age&quot;      &quot;attitude&quot; &quot;deep&quot;     &quot;stra&quot;     &quot;surf&quot;    
 ## [7] &quot;points&quot;</code></pre>
-<pre class="r"><code>str(sub_learn14)</code></pre>
 <pre><code>## 'data.frame':    183 obs. of  7 variables:
 ##  $ gender  : Factor w/ 2 levels &quot;F&quot;,&quot;M&quot;: 1 2 1 2 2 1 2 1 2 1 ...
 ##  $ age     : int  53 55 49 53 49 38 50 37 37 42 ...
@@ -196,13 +178,6 @@ colnames(sub_learn14)</code></pre>
 ##  $ stra    : num  3.38 2.75 3.62 3.12 3.62 ...
 ##  $ surf    : num  2.58 3.17 2.25 2.25 2.83 ...
 ##  $ points  : int  25 12 24 10 22 21 21 31 24 26 ...</code></pre>
-<pre class="r"><code>sub_learn14 &lt;- filter(sub_learn14, points &gt;! 0)
-
-
-write.csv(sub_learn14, file = &quot;C:/Users/Murmeli/Documents/GitHub/IODS-project/data/learning2014.csv&quot;, row.names = FALSE)
-lrn2014 &lt;- read.csv(&quot;C:/Users/Murmeli/Documents/GitHub/IODS-project/data/learning2014.csv&quot;)
-
-head(lrn2014)</code></pre>
 <pre><code>##   gender age attitude  deep  stra     surf points
 ## 1      F  53       37 3.750 3.375 2.583333     25
 ## 2      M  55       31 2.875 2.750 3.166667     12
