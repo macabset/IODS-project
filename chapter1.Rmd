@@ -1,5 +1,6 @@
 
 # About the project
 
-This is an Open Data Science course for learning R and analysing and presenting data.
-Link to my Github repository: https://github.com/macabset/IODS-project
+This is an Open Data Science course for analysing and presenting data with R-software.
+
+Here is the link to my Github repository, where you can see how all the magic is done: https://github.com/macabset/IODS-project

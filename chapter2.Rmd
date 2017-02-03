@@ -1,6 +1,6 @@
 # Regression analysis - why attitude matters
 
-*This week I have completed DataCamp exercises, peer reviewed Rstudio excersice 1 and surprisingly enough learned for the first time to create regression model in RStudio excercise 2. This has been an excellent opportunity to learn to interpret regression model many-sidedly and thoroughly.*
+*This week I have completed DataCamp exercises, peer reviewed Rstudio excersice 1 and surprisingly enough learned for the first time to create regression models in the RStudio excercise 2. This has been an excellent opportunity to learn to interpret regression model many-sidedly and thoroughly.*
 
 ##Part 1 
 is the data wrangling exercise, which doesn't show on my course diary. If you are interested, go and check in my github: https://github.com/macabset/IODS-project/blob/master/data/create_learning2014.R
@@ -31,8 +31,8 @@ str(sub_learn14)
 sub_learn14 <- filter(sub_learn14, points >! 0)
 
 
-write.csv(sub_learn14, file = "C:/Users/Murmeli/Documents/GitHub/IODS-project/data/learning2014.csv", row.names = FALSE)
-lrn2014 <- read.csv("C:/Users/Murmeli/Documents/GitHub/IODS-project/data/learning2014.csv")
+write.csv(sub_learn14, file = "C:/Users/Petri/Documents/GitHub/IODS-project/data/learning2014.csv", row.names = FALSE)
+lrn2014 <- read.csv("C:/Users/Petri/Documents/GitHub/IODS-project/data/learning2014.csv")
 
 head(lrn2014)
 ```
@@ -46,8 +46,8 @@ dim(lrn2014)
 ```
 
 Here we can see the learning2014 dataset, whih has 7 variables with 166 observations. 
-  This questionnary conserning students's approaches to learning has been collected from course:" Introduction to Social Statistics, fall 2014" (Finnish)
-  Dataset has been modified so that questions have been combined and point values of 0 have been removed.
+  This questionnary conserning students's approaches to learning has been collected from a course:" Introduction to Social Statistics, fall 2014" (Finnish).
+  Dataset has been modified so that questions have been combined to combined variables and 0 values in variable points have been removed.
 
 ```{r}
 summary(lrn2014)
@@ -66,7 +66,7 @@ Figure1 <- C + ggtitle("Figure 1. The relationship between attitude and points")
 Figure1
 ```
 
-Figure 1 shows us how attitude towards statistics correlate to the points for the exam. In this case, such in many others, motivation explains partly success.
+Figure 1 shows us how attitude towards statistics correlate to the points of the exam. In this case, such as in many others, motivation explains partly success.
 
 
 ###EXTRA: Combinig strategic learning to points.
@@ -78,7 +78,7 @@ Figure2 <- D2 + ggtitle("Figure 2. The relationship between strategic learning a
 Figure2
 ```
 
-If we look at Figure 2 there seems to be very small linear relationship between strategic learning and exam points. If student used strategic learning method in general, he or she might have gained a bit better exam points.
+If we look at Figure 2 there seems to be a very small linear relationship between strategic learning and exam points. If student used strategic learning method in general, he or she might have gained a bit better exam points.
 
 ###2.3 Regression model
 *Choosing explaining variables*
@@ -88,7 +88,7 @@ library(GGally)
 ggpairs(lrn2014, lower= list(combo = wrap("facethist", bins = 20)))
 ```
 
-As we can see in our plot matrix, variables attitude, stra and surf correlate the most with points. Lets try those as explanatory values in our regression model.
+As we can see in our plot matrix, variables attitude, stra and surf correlate the most with the points. Lets try those as explanatory variables in our regression model.
 
 *Explaining points with attitude, strategic learning  and surface learning*
 
@@ -124,25 +124,28 @@ However, we should consider our model as a whole, so let's check first our R-squ
 
 ### 2.4 Interpreting R-squared
 
-Then we should look at our R-squared values to see how well our model fits to our observations.  
+R-squared in our regression model tells us how well our model fits to observations. To simplify, the bigger the R-squared the better our model seems to fit to observations. 
 
-Our 3 tests of regression model show that our Multiple R-squared lowers each time we drop a variable. That happens, because it increases every time you add a variable.  What we also see is that the 2nd test has the highest adjusted R-square, even though it has more variables than the last one.
+Our 3 tests of regression model show that our Multiple R-squared lowers each time we drop a variable. That happens, because it increases every time you add a variable, so drop in itself isn't a bad thing.  What we also see is that the 2nd test has the highest *adjusted R-square*. This should mean that even though we have more variables than in the 3rd one, it seems to be a better model in quality, and not just better fit because we add or lose variables.
 
-I conclude that we still should consider bringing back strategic learning to our multiple regression model, even though its p-value is over magical line of 0.05.
+I conclude that we still should consider bringing back the strategic learning to our multiple regression model, even though its p-value is over magical line of 0.05. Now we can check if regression model 2 is really viable by checking the residuals in our model.
 
 ###2.5 Errors in our model
 
-Let's check Residuals vs Fitted values, Normal QQ-plot and Residuals vs Leverage.
+Let's check Residuals vs Fitted values, Normal QQ-plot and Residuals vs Leverage with our regression model 2.
 
 ```{r}
 errors <- plot(my_reg2, which= c(1,2,5), par(mfrow= c(2,2)))
 ```
 
 In plot 1 we see, that values are reaasonably well scattered through out the area, which means that errors make no pattern, as is expected from a good model.
-  In plot 2 we see, that the errors seem to be normally distributed, which is consistent with our assumption, atlhough our model is less suitable in the both ends of values.
-  In plot 3 we see, that no single observation has too much weight on the model.
 
-*To conclude:* 
-our regression model 2, with explanatory variables attitude and strategic learning, exam points are explained with linear model. Considering the r-squared and checking with residuals, it indeed seems that the 2nd regression model best explains points. That means the more positive attitude and the more strategically you wish to learn statistics, the better outcome you get from statistics exam.
+In plot 2 we see, that our observations lines up to a line, so the errors seem to be normally distributed. This is consistent with our assumption, atlhough our model is less suitable in the both ends of values.
+  
+In plot 3 we see, that no single observation has too much weight on the model, leverage line stayes under 0.05 in the whole plot.
+
+##Part 3: To conclude
+
+our regression model 2, with explanatory variables attitude and strategic learning, exam points are explained with linear model. Considering the r-squared and checking with residuals, it indeed seems that the 2nd regression model best explains points. That means the more positive attitude towards statistics and the more strategically you wish to learn, the better outcome you get from statistics exam.
 
 
