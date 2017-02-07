@@ -1,0 +1,111 @@
+---
+title: "Chapter 3"
+author: "Maika"
+date: "7 helmikuuta 2017"
+output: html_document
+---
+#Logistic regression
+##Part 1
+The data Wrangling part can be seen in my github: https://github.com/macabset/IODS-project/blob/master/data/create_alc.R
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+full_mat <- read.csv("C:/Users/Petri/Documents/GitHub/IODS-project/data/student-mat.csv", header = TRUE, sep=";")
+full_por <- read.csv("C:/Users/Petri/Documents/GitHub/IODS-project/data/student-por.csv", header = TRUE, sep=";")
+library(dplyr)
+join_by <- c("school","sex","age","address","famsize","Pstatus","Medu","Fedu","Mjob","Fjob","reason","nursery","internet")
+joined_math_por <- inner_join(full_mat, full_por, by= join_by, suffix= c(".full_mat", ".full_por"))
+colnames(joined_math_por)
+str(joined_math_por)
+dim(joined_math_por)
+alc <- select(joined_math_por, one_of(join_by))
+notjoined_columns <- colnames(full_mat)[!colnames(full_mat) %in% join_by]
+notjoined_columns
+for(column_name in notjoined_columns) {
+  two_columns <- select(joined_math_por, starts_with(column_name))
+  first_column <- select(two_columns, 1)[[1]]
+  
+  if(is.numeric(first_column)) {
+    
+    alc[column_name] <- round(rowMeans(two_columns))
+  } else { 
+  
+    alc[column_name] <- first_column
+  }
+}
+
+library(ggplot2)
+alc <- mutate(alc, alc_use= (Dalc + Walc)/2)
+alc <- mutate(alc, high_use = (alc_use) > 2)
+
+write.csv(alc, file = "C:/Users/Petri/Documents/GitHub/IODS-project/data/create_alc.csv", row.names = FALSE)
+alc2016 <- read.csv("C:/Users/Petri/Documents/GitHub/IODS-project/data/create_alc.csv")
+
+```
+##Part 2
+###2.1 Our data
+
+```{r}
+dim(alc2016)
+str(alc2016)
+```
+This is part of Student Alcohol Consumption Data Set, where we have combined Secondary school students` performance on match course and Portuguese language course. In our combined dataset we have 182 observations and 35 variables. Most of our variables are discrete numeric values, where you can describe the level of agreement of disagreement in scales. 13 of them are two-level vectors, where eight of them are yes/no questions. 
+
+I have created a variable High_use, which  is our only logical vector. It declares high use of alcohol consumption. I have also modified the data by making alc_use the average of weekday and weekend consumption. The variables in our data used here, but not used for joining the datasets, have been combined by averaging.
+
+###2.2 Four variables explaining alcohol consumption
+
+My personal interest will include gender (sex) as a basic variable when discussion about differences in any behaviour. Are boys any different than girls in alcohol behaviour?I believe that the more you care about your studies (studytime) the less you drink. Similarly I think that the more you care about your health the less you use alcohol (health), and lastly I'll pick something to attach family situation (famrel). My hypothesis is the worse you have at home the more you escape to alcohol.
+
+###Exploring our data
+Following figures are as help to explain high use of alcohol regarding our pre-assumptions.
+
+1. studytime
+
+```{r}
+g1 <- ggplot(alc2016, aes(x = high_use, y = studytime, col=sex))
+g2 <- g1 + geom_boxplot() + ggtitle("Figure 1.Studytime by high use of alcohol and gender")
+g2
+```
+
+Regarding our Figure 1, it would seem that males and females have very different patterns for how high use of alcohol influences studytime. It seems that whether boys used a lot of alcohol makes no difference to studytime, when regarding girls on the other hand, it looks like that high users of alcohol wont study at all and not high users study lot more than boys not studying.
+
+2.Family relationship
+
+```{r}
+h1 <- ggplot(alc2016, aes( x= high_use, y= famrel, col= sex))
+h2 <- h1 + geom_boxplot()+ ylab("family relations")
+h3 <- h2 + ggtitle("Figure 2. Family relationship by alcohol consumption and sex")
+h3
+```
+
+
+Our figure 2 supports our assumption that with high alcohol consumption you have worse family relations. In this case I still would interpret that family relations influence high use of alcohol and not the other way around.
+
+3.Health
+
+```{r}
+library(GGally)
+library(dplyr)
+i1 <- ggally_facetbar(alc2016, ggplot2::aes(x= health, y= high_use, fill =sex))
+i1 + ggtitle("Figure 3. High use of alcohol by health and sex")
+```
+
+Our Figure 3 illuminates how there's all in all less observations in high use of alcohol. When students did use a lot of alcohol, surprisingly high proportions of them state their health "very good". So it would seem that in general, there's more people stating good health if not drinking lot of alcohol, but if you drink a lot of alcohol, you declare a good health more likely thatn poor health. This was rather surprisin, so let's check this later in our logistic regression.
+
+###2.3 Logistic regression model
+Generally, in logistic regression model the target variable is binary: in this case high use of alcohol or no high use of alcohol. So our model predicts what is the probability of health, famrel, sex and studytime of belonging to high use of alcohol.
+
+```{r}
+m1 <- glm(high_use ~ health + famrel + sex + studytime, data = alc2016, family = "binomial")
+summary(m1)
+coef(m1)
+```
+It looks like, indeed, health plays no crucial role in high use of alcohol. So let's do our model again, but without health.
+
+```{r}
+m2 <- glm(high_use ~ famrel + sex + studytime, data = alc2016, family = "binomial")
+summary(m2)
+coef(m2)
+```
+The coefficient here are famrel, sexM and studytime, which are being compared to high_use (intercept). THe coefficients tell that every
+
