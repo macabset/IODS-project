@@ -107,5 +107,14 @@ m2 <- glm(high_use ~ famrel + sex + studytime, data = alc2016, family = "binomia
 summary(m2)
 coef(m2)
 ```
-The coefficient here are famrel, sexM and studytime, which are being compared to high_use (intercept). THe coefficients tell that every
+The coefficient here are famrel, sexM and studytime, which are being compared to high_use (intercept). THe coefficients tell that every time the high alcoholic use rise, so does (or in this case lowers with famrel and studytime) the coefficient accorriding to its estimate. It seems that in our logistic model 2, all coefficient are valid and we can use all of them in the last phase.
+
+*Confidence Intervals*
+
+```{r}
+confint(m2)
+```
+
+###2.4.Predictiong power of the model
+2x2 cross tabulation of predictions versus the actual values 
 

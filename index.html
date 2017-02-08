@@ -453,7 +453,19 @@ summary(m2)</code></pre>
 <pre class="r"><code>coef(m2)</code></pre>
 <pre><code>## (Intercept)      famrel        sexM   studytime 
 ##   0.8394792  -0.2981605   0.7256730  -0.4678942</code></pre>
-<p>The coefficient here are famrel, sexM and studytime, which are being compared to high_use (intercept). THe coefficients tell that every</p>
+<p>The coefficient here are famrel, sexM and studytime, which are being compared to high_use (intercept). THe coefficients tell that every time the high alcoholic use rise, so does (or in this case lowers with famrel and studytime) the coefficient accorriding to its estimate. It seems that in our logistic model 2, all coefficient are valid and we can use all of them in the last phase.</p>
+<p><em>Confidence Intervals</em></p>
+<pre class="r"><code>confint(m2)</code></pre>
+<pre><code>## Waiting for profiling to be done...</code></pre>
+<pre><code>##                  2.5 %      97.5 %
+## (Intercept) -0.3269596  2.01554289
+## famrel      -0.5464683 -0.05114787
+## sexM         0.2495928  1.20934805
+## studytime   -0.7832290 -0.16886157</code></pre>
+</div>
+<div id="predictiong-power-of-the-model" class="section level3">
+<h3>2.4.Predictiong power of the model</h3>
+<p>2x2 cross tabulation of predictions versus the actual values</p>
 <hr />
 </div>
 </div>
