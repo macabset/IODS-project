@@ -6,14 +6,14 @@ output: html_document
 ---
 #Logistic regression
 
-*This week we're learning logistic regression, which uses linear models to predict binary variables. How exciting! And very very difficult, since this is an entirely new method for me.*
+*This week we're learning logistic regression, which uses linear model to predict binary variables. How exciting! And very very difficult, since this is an entirely new method for me.*
 
 ##Part 1
 The data Wrangling part can be seen in my github: https://github.com/macabset/IODS-project/blob/master/data/create_alc.R
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-full_mat <- read.csv("C:/Users/Murmeli/Documents/GitHub/IODS-project/data/student-mat.csv", header = TRUE, sep=";")
-full_por <- read.csv("C:/Users/Murmeli/Documents/GitHub/IODS-project/data/student-por.csv", header = TRUE, sep=";")
+full_mat <- read.csv("C:/Users/Petri/Documents/GitHub/IODS-project/data/student-mat.csv", header = TRUE, sep=";")
+full_por <- read.csv("C:/Users/Petri/Documents/GitHub/IODS-project/data/student-por.csv", header = TRUE, sep=";")
 library(dplyr)
 join_by <- c("school","sex","age","address","famsize","Pstatus","Medu","Fedu","Mjob","Fjob","reason","nursery","internet")
 joined_math_por <- inner_join(full_mat, full_por, by= join_by, suffix= c(".full_mat", ".full_por"))
@@ -40,8 +40,8 @@ library(ggplot2)
 alc <- mutate(alc, alc_use= (Dalc + Walc)/2)
 alc <- mutate(alc, high_use = (alc_use) > 2)
 
-write.csv(alc, file = "C:/Users/Murmeli/Documents/GitHub/IODS-project/data/create_alc.csv", row.names = FALSE)
-alc2016 <- read.csv("C:/Users/Murmeli/Documents/GitHub/IODS-project/data/create_alc.csv")
+write.csv(alc, file = "C:/Users/Petri/Documents/GitHub/IODS-project/data/create_alc.csv", row.names = FALSE)
+alc2016 <- read.csv("C:/Users/Petri/Documents/GitHub/IODS-project/data/create_alc.csv")
 
 ```
 ##Part 2
@@ -51,15 +51,15 @@ alc2016 <- read.csv("C:/Users/Murmeli/Documents/GitHub/IODS-project/data/create_
 dim(alc2016)
 str(alc2016)
 ```
-This is part of Student Alcohol Consumption Data Set, where we have combined Secondary school students` performance on match course and Portuguese language course.The data has been collected 2008 but released 2016. In our combined dataset we have 182 observations and 35 variables. Most of our variables are discrete numeric values, where you can describe the level of agreement of disagreement in scale. 13 of them are two-level vectors, where eight of them are yes/no questions. 
+This is part of Student Alcohol Consumption Data Set, where we have combined Secondary school students` performance on match course and Portuguese language course.The data has been collected 2008 but released 2016. In our combined dataset we have 182 observations and 35 variables. Most of our variables are discrete numeric values, where you can describe the level of agreement of disagreement in scale. 13 of them are two-level vectors, where eight of those are yes/no questions. 
 
-I have created a variable High_use, which  is our only logical vector. It declares high use of alcohol consumption. I have also modified the data by making alc_use the average of weekday and weekend consumption. The variables in our data used here, but not used for joining the datasets, have been combined by averaging.
+I have created a variable High_use, which  is our only logical vector and it declares high use of alcohol consumption. The high use has been created by modifying the data by making the average of weekday and weekend consumption and stating its high end on high use. The variables in our data used here, but not used for joining the datasets, have been combined by averaging.
 
-###2.2 Four variables explaining alcohol consumption
+###2.2 Hypothesis - Four variables explaining alcohol consumption
 
 My personal interest will include gender (sex) as a basic variable when discussion about differences in any behaviour. Are boys any different than girls in alcohol behaviour? I believe that the more you care about your studies (studytime) the less you drink. Similarly I think that the more you care about your health the less you use alcohol (health), and lastly I'll pick something to attach family situation (famrel). My hypothesis is the worse you have at home the more you escape to alcohol.
 
-Sex is a binary factor with options male/female, studytime is a 4-level variable according to evaluation of studytime and health and famrel are likert scale variables.
+Sex is a binary factor with options male/female, studytime is a 4-level variable according to evaluation of studytime and health and famrel are likert scale variables based on self evaluation.
 
 ###2.3Exploring our data
 Following figures are as help to explain high use of alcohol regarding our pre-assumptions.
@@ -72,7 +72,7 @@ g2 <- g1 + geom_boxplot() + ggtitle("Figure 1.Studytime by high use of alcohol a
 g2
 ```
 
-Regarding our Figure 1, it would seem that males and females have very different patterns for how high use of alcohol influences studytime. It seems that whether boys used a lot of alcohol makes no difference to studytime, when regarding girls on the other hand, it looks like that high users of alcohol wont study at all and not high users study lot more than boys not using alcohol.
+When looking at our Figure 1, it would seem that males and females have very different patterns for how high use of alcohol influences studytime. It seems that whether boys used a lot of alcohol makes no difference to studytime, when regarding girls on the other hand, it looks like that high users of alcohol wont study at all and not high users study lot more than boys not using alcohol.
 
 2.Family relationship
 
@@ -84,7 +84,7 @@ h3
 ```
 
 
-Our figure 2 supports our assumption that with high alcohol consumption you have worse family relations. In this case I still would interpret that family relations influence high use of alcohol and not the other way around.
+Our figure 2 supports our assumption that with high alcohol consumption you have worse family relations. We can assume that family relations influence high use of alcohol and not the other way around.
 
 3.Health
 
@@ -95,24 +95,24 @@ i1 <- ggally_facetbar(alc2016, ggplot2::aes(x= health, y= high_use, fill =sex))
 i1 + ggtitle("Figure 3. High use of alcohol by health and sex")
 ```
 
-Our Figure 3 illuminates how there's all in all less observations in high use of alcohol. When students did use a lot of alcohol, surprisingly high proportions of them state their health "very good". So it would seem that in general, there's more people stating good health if not drinking lot of alcohol, but if you drink a lot of alcohol, you declare a good health more likely than poor health. This was rather surprising, so let's check this result in our logistic regression.
+Our Figure 3 illustrates how there's all in all less observations in high use of alcohol. When students did use a lot of alcohol, surprisingly high proportions of them state their health "very good". So it would seem that in general, there's more people stating good health if not drinking lot of alcohol, but if you drink a lot of alcohol, you declare a good health more likely than poor health. This was rather surprising, so let's check this result in our logistic regression.
 
 ###2.4 Logistic regression model
-Generally, in logistic regression model the target variable is binary: in this case high use of alcohol or no high use of alcohol. So our model predicts what is the probability of health, famrel, sex and studytime of belonging to high use of alcohol.
+Generally, in simple logistic regression model the target variable is binary: in this case high use of alcohol or no high use of alcohol. So our model predicts what is the probability of health, famrel, sex and studytime of belonging to high use of alcohol.
 
 ```{r}
 m1 <- glm(high_use ~ health + famrel + sex + studytime, data = alc2016, family = "binomial")
 summary(m1)
 coef(m1)
 ```
-It looks like, indeed, health plays no crucial role in high use of alcohol. So let's do our model again, but without health.
+It looks like, indeed, health plays no crucial role in high use of alcohol. So let's calculate our model again, but without health as coefficient.
 
 ```{r}
 m2 <- glm(high_use ~ famrel + sex + studytime, data = alc2016, family = "binomial")
 summary(m2)
 coef(m2)
 ```
-The coefficient here are famrel, sexM and studytime, which are being compared to high_use (intercept). The coefficients tell that every time the high alcoholic use rise, so does (or in this case lowers with famrel and studytime) the coefficient accorriding to its estimate. For example, the negaative predictor of studytime means that all other thigs beaing equall, if high alcoholic use, family relationships are less likely to be good. It seems that in our logistic model 2, all coefficient are valid and we can use all of them in the last phase.
+The coefficients here are famrel, sexM and studytime, which are being compared to high_use (intercept). The coefficients tell that every time the coefficient rises (or drops as in famrel and studytime) a unit, the probability of being a high alcohol user rises. For example, the negaative predictor of studytime means that all other thigs beaing equall, if high alcoholic use, family relationships are less likely to be good. It seems that in our logistic model 2, all coefficient are valid and we can use all of them in the last phase.
 
 *Confidence intervals for the coefficients as odds ratio*
 ```{r}
@@ -120,10 +120,10 @@ OR <- coef(m2) %>% exp
 CI <- exp(confint(m2))
 cbind(OR, CI)
 ```
-SexM has the widest gap in confidence intervals.This should mean that there's 95% probability that odds ratio of the sexM is between 1.2-3.3.The wider the gap the more inaccurate our mean value 2.066 is. The odds for male to have high alcoholic sonsumption is 2 times larger than for females. When considering OR under one, it means that there's bigger probability have high alcoholic consumption when there's less the property famrel: In English: the lower the famrel tha higher the consumption.
+SexM has the widest gap in confidence intervals.This should mean that there's 95% probability that odds ratio (OR) of the sexM is between 1.2-3.3.The wider the gap the more inaccurate our mean value 2.066 is. The odds for male to have high alcoholic sonsumption is 2 times larger than for females. When considering OR under one, it means that there's bigger probability have high alcoholic consumption when there's less the property famrel, for example. In English: the lower the famrel the higher the consumption of alcohol. This is as predicted in hypothesis.
 
 ###2.5 Predictiong power of the model
-Let's see how our model stands in prediction power when adding new data.In our added data, we predict for every observation what is the likehood of being high alcoholic consumer, using our model 2 as predictioner. Then in order to make it binary, we set the value 0.5: if our model predicts the probability of being high alcoholic consumer more than 0.5, it states High_use as true. Then we compare the prediction to what the actual status of the observation is: is it true that that student is a high consumer if our model predicts so?
+Let's see how well our model stands in prediction power when adding new data. In our added data, we predict for every observation what is the likehood of being high alcoholic consumer, using our model 2 as predictioner. Then in order to make it binary, we set the value 0.5: if our model predicts the probability of being high alcoholic consumer more than 0.5, it states High_use as true. Then we compare the prediction to what the actual status of the observation is: is it true that that student is a high consumer if our model predicts so?
 
 ```{R}
 probabilities <- predict(m2, type = "response")
@@ -149,6 +149,7 @@ When prediction predicts a false in high alcoholic use, 66% of the time it reall
 
 *How well did we do in our prediction?*
 
+Testing error
 ```{r}
 loss_func <- function(class, prob) {
   n_wrong <- abs(class - prob) > 0.5
@@ -157,12 +158,12 @@ loss_func <- function(class, prob) {
 
 loss_func(class = alc2016$high_use, prob = alc2016$probability)
 ```
-30% is close to our earlier statement of 27% of false guesses, when our model guesses the high use to be false. As most of the students are non high users of alcohol, it got pretty close to real error. We have 30% "penalty", which means that 30% of our predictions are not correctly classified compared to actual data. 
+Here we have calculated the loss of our model. 30% is close to our earlier statement of 27% of false guesses, when our model guesses the high use to be false. As most of the students are non high users of alcohol, it got pretty close to real error. We have 30% "penalty", which means that 30% of our predictions are not correctly classified compared to actual data. 
 
 ###2.6 Conclusion - how good is our model?
 
-Considering our original hypotheses, I'd say they have some value. The health got discharged at the first phase of our logistic regression model: it seems that it has no statistically significant meaning in predicting high use of alcohol. Our regression model 2 supports my original hypotheses: combining the status of your familyrelationship, gender and time you use studying, our model predicts how likely you are to use alcohol. Individually the model works ase I theorized: men are more likely to be high consumers than women, the worse your familyrelations the more likely you are to be high consumer and the less you use time to your studies the more likely you are a high user of alcohol.
+Considering our original hypotheses, I'd say they have some value. The health got discharged at the first phase in our logistic regression: it seems that it has no statistically significant meaning in predicting high use of alcohol. Our regression model 2 supports my original hypothesis: combining the status of your familyrelationship, gender and time you use studying, our model predicts how likely you are to use alcohol 70% of the time correctly. Individually the coefficients works as I theorized: men are more likely to be high consumers than women, the worse your familyrelations are the more likely you are to be a high consumer and the less you use time in your studies the more likely you are a high user of alcohol.
 
-What if we'd guess that when our model gives the prediction, it never guesses right? As you recall, we got 30% error. This means that 70% of the cases when our model guessed a high consumption, there really was high consumption in alcohol use. Now, if it would never guess right, the training error would be 100%. That would mean that everytime our model predicts a person is a high user he/she is not. Then again if our model would be perfect, there would be no such a thing as training error and everytime our model predicts a high use, we find that he/she actually was high user in our data.
+What if we'd guess that when our model gives the prediction, it never guesses right? As you recall, we got 30% error. This means that 70% of the cases when our model guessed a high consumption, there really was high consumption in alcohol use. Now, if it would never guess right, the training error would be 100%. That would mean that everytime our model predicts a person is a high user he/she is not. Then again if our model would be perfect, there would be no such a thing as a training error and everytime our model predicts a high use, we would find that he/she actually was high user in our data.
 
-All together, our model had a bit higher error than in datacamp exercises(0.26, with coefficients failures, absences, sex). Is it a good or a bad thing? Well, I'd suppose that we never get as good results in human sciences as the results in medical diceases or text based researches: people are complicated. 70% is not bad, but i'd suppose that with our 35 variables we could do a bit better than that, as is seen compared to coefficients used in the data camp exercise. 
+All together, our model had a bit higher error than in datacamp exercises(0.26, with coefficients failures, absences, sex). Is it a good or a bad thing? Well, I'd suppose that we never get as good results in human sciences as the results in medical diceases or text based researches: people are complicated. 70% is not bad, but I think that with our 35 variables we could do a bit better than that, as is seen compared to coefficients used in the data camp exercise.
