@@ -144,7 +144,7 @@ In plot 2 we see, that our observations lines up to a line, so the errors seem t
   
 In plot 3 we see, that no single observation has too much weight on the model, leverage line stayes under 0.05 in the whole plot.
 
-##Part 3: To conclude
+###2.6 To conclude
 
 our regression model 2, with explanatory variables attitude and strategic learning, exam points are explained with linear model. Considering the r-squared and checking with residuals, it indeed seems that the 2nd regression model best explains points. That means the more positive attitude towards statistics and the more strategically you wish to learn, the better outcome you get from statistics exam.
 
