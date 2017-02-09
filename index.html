@@ -453,19 +453,194 @@ summary(m2)</code></pre>
 <pre class="r"><code>coef(m2)</code></pre>
 <pre><code>## (Intercept)      famrel        sexM   studytime 
 ##   0.8394792  -0.2981605   0.7256730  -0.4678942</code></pre>
-<p>The coefficient here are famrel, sexM and studytime, which are being compared to high_use (intercept). THe coefficients tell that every time the high alcoholic use rise, so does (or in this case lowers with famrel and studytime) the coefficient accorriding to its estimate. It seems that in our logistic model 2, all coefficient are valid and we can use all of them in the last phase.</p>
-<p><em>Confidence Intervals</em></p>
-<pre class="r"><code>confint(m2)</code></pre>
+<p>The coefficient here are famrel, sexM and studytime, which are being compared to high_use (intercept). THe coefficients tell that every time the high alcoholic use rise, so does (or in this case lowers with famrel and studytime) the coefficient accorriding to its estimate. For example, the negaative predictor of studytime means that all other thigs beaing equall, if high alcoholic use, family relationships are less likely to be good. It seems that in our logistic model 2, all coefficient are valid and we can use all of them in the last phase.</p>
+<p><em>Confidence intervals for the coefficients as odds ratio</em></p>
+<pre class="r"><code>OR &lt;- coef(m2) %&gt;% exp
+CI &lt;- exp(confint(m2))</code></pre>
 <pre><code>## Waiting for profiling to be done...</code></pre>
-<pre><code>##                  2.5 %      97.5 %
-## (Intercept) -0.3269596  2.01554289
-## famrel      -0.5464683 -0.05114787
-## sexM         0.2495928  1.20934805
-## studytime   -0.7832290 -0.16886157</code></pre>
+<pre class="r"><code>cbind(OR, CI)</code></pre>
+<pre><code>##                    OR     2.5 %    97.5 %
+## (Intercept) 2.3151609 0.7211129 7.5048006
+## famrel      0.7421822 0.5789910 0.9501382
+## sexM        2.0661211 1.2835027 3.3512991
+## studytime   0.6263198 0.4569282 0.8446258</code></pre>
+<p>SexM has the widest gap in confidence intervals.This should mean that there’s 95% probability that odds ratio of the sexM is between 1.2-3.3.The wider the gap the more inaccurate our mean value 2.066 is. The odds for male to have high alcoholic sonsumption is 2 times larger than for femal. When takking 5 scale explaining variable famrel, OR being under one, it means that there’s bigger probability have high alcoholic consumption when there’s less the property famrel: In English: the lower the famrel tha higher the consumption.</p>
 </div>
 <div id="predictiong-power-of-the-model" class="section level3">
 <h3>2.4.Predictiong power of the model</h3>
-<p>2x2 cross tabulation of predictions versus the actual values</p>
+<p>Let’s see how our model stands in prediction power when adding new data.In our added data, we predict for every observation what is the likehood of being high alcoholic consumer. Then in order to make it binary, we set the value 0.5: if our model predicts the probability of being high alcoholic consumer more than 0.5, it states High_use as true. Then we compare the prediction to what the actual status of the observation is: is it true that that student is a high consumer if our model predicts so?</p>
+<pre class="r"><code>probabilities &lt;- predict(m2, type = &quot;response&quot;)
+
+alc2016 &lt;- mutate(alc2016, probability = probabilities)
+
+alc2016 &lt;- mutate(alc2016, prediction = probability &gt; 0.5)
+
+table(high_use = alc2016$high_use, prediction = alc2016$prediction)</code></pre>
+<pre><code>##         prediction
+## high_use FALSE TRUE
+##    FALSE   255   13
+##    TRUE    102   12</code></pre>
+<pre class="r"><code>probabilities</code></pre>
+<pre><code>##          1          2          3          4          5          6 
+## 0.21603037 0.16979063 0.21603037 0.18866855 0.21603037 0.29703882 
+##          7          8          9         10         11         12 
+## 0.36278927 0.21603037 0.36278927 0.29703882 0.27075592 0.11354753 
+##         13         14         15         16         17         18 
+## 0.47617203 0.29703882 0.26285686 0.30553931 0.18866855 0.16979063 
+##         19         20         21         22         23         24 
+## 0.40286428 0.55052111 0.36278927 0.40286428 0.36278927 0.29703882 
+##         25         26         27         28         29         30 
+## 0.14718587 0.51834788 0.47617203 0.62267949 0.29703882 0.36278927 
+##         31         32         33         34         35         36 
+## 0.29703882 0.36278927 0.36278927 0.29703882 0.40286428 0.37217517 
+##         37         38         39         40         41         42 
+## 0.20926972 0.39296847 0.14718587 0.30553931 0.27075592 0.40286428 
+##         43         44         45         46         47         48 
+## 0.36278927 0.40286428 0.21603037 0.16979063 0.33344823 0.18256478 
+##         49         50         51         52         53         54 
+## 0.36278927 0.21603037 0.21603037 0.21603037 0.40286428 0.37217517 
+##         55         56         57         58         59         60 
+## 0.24615643 0.16979063 0.21603037 0.43410607 0.36278927 0.21603037 
+##         61         62         63         64         65         66 
+## 0.33344823 0.24615643 0.21603037 0.18866855 0.21603037 0.16979063 
+##         67         68         69         70         71         72 
+## 0.35329542 0.09755076 0.21603037 0.09755076 0.18256478 0.23131407 
+##         73         74         75         76         77         78 
+## 0.27075592 0.40286428 0.21603037 0.36278927 0.23131407 0.07426831 
+##         79         80         81         82         83         84 
+## 0.47617203 0.47617203 0.33344823 0.55052111 0.20926972 0.21603037 
+##         85         86         87         88         89         90 
+## 0.29703882 0.21603037 0.21603037 0.21603037 0.11354753 0.36278927 
+##         91         92         93         94         95         96 
+## 0.36278927 0.14718587 0.30553931 0.27075592 0.16979063 0.18256478 
+##         97         98         99        100        101        102 
+## 0.12712971 0.55052111 0.21603037 0.24615643 0.11354753 0.47617203 
+##        103        104        105        106        107        108 
+## 0.26285686 0.40286428 0.21603037 0.29703882 0.09755076 0.07426831 
+##        109        110        111        112        113        114 
+## 0.20926972 0.36278927 0.35329542 0.11354753 0.40286428 0.14718587 
+##        115        116        117        118        119        120 
+## 0.27075592 0.55052111 0.29703882 0.29703882 0.36278927 0.36278927 
+##        121        122        123        124        125        126 
+## 0.40286428 0.29703882 0.55052111 0.27075592 0.14218894 0.21603037 
+##        127        128        129        130        131        132 
+## 0.55052111 0.16979063 0.40286428 0.16979063 0.27075592 0.55052111 
+##        133        134        135        136        137        138 
+## 0.14718587 0.30553931 0.37217517 0.37217517 0.29703882 0.14718587 
+##        139        140        141        142        143        144 
+## 0.29703882 0.30553931 0.36278927 0.30553931 0.28848662 0.62267949 
+##        145        146        147        148        149        150 
+## 0.14718587 0.37217517 0.47617203 0.40286428 0.21603037 0.27075592 
+##        151        152        153        154        155        156 
+## 0.21603037 0.36278927 0.55052111 0.47617203 0.62267949 0.47617203 
+##        157        158        159        160        161        162 
+## 0.14718587 0.47617203 0.30553931 0.36278927 0.62267949 0.24615643 
+##        163        164        165        166        167        168 
+## 0.47617203 0.36278927 0.55052111 0.29703882 0.36278927 0.21603037 
+##        169        170        171        172        173        174 
+## 0.16979063 0.21603037 0.55052111 0.36278927 0.36278927 0.21603037 
+##        175        176        177        178        179        180 
+## 0.21603037 0.36278927 0.27075592 0.36278927 0.47617203 0.29703882 
+##        181        182        183        184        185        186 
+## 0.43410607 0.36278927 0.36278927 0.16979063 0.16979063 0.40264179 
+##        187        188        189        190        191        192 
+## 0.36278927 0.55052111 0.36278927 0.27075592 0.43410607 0.21603037 
+##        193        194        195        196        197        198 
+## 0.16979063 0.36278927 0.47617203 0.40286428 0.21603037 0.40286428 
+##        199        200        201        202        203        204 
+## 0.55052111 0.30553931 0.21603037 0.21603037 0.21603037 0.21603037 
+##        205        206        207        208        209        210 
+## 0.24615643 0.07426831 0.14718587 0.33344823 0.40264179 0.30553931 
+##        211        212        213        214        215        216 
+## 0.14718587 0.09755076 0.29703882 0.27075592 0.36278927 0.24615643 
+##        217        218        219        220        221        222 
+## 0.21603037 0.27075592 0.43410607 0.37217517 0.14718587 0.21603037 
+##        223        224        225        226        227        228 
+## 0.14718587 0.33344823 0.43410607 0.11354753 0.16979063 0.16979063 
+##        229        230        231        232        233        234 
+## 0.29703882 0.36278927 0.18866855 0.27075592 0.36278927 0.36278927 
+##        235        236        237        238        239        240 
+## 0.36278927 0.43410607 0.20926972 0.36278927 0.30553931 0.33344823 
+##        241        242        243        244        245        246 
+## 0.29703882 0.50825994 0.43410607 0.40286428 0.29703882 0.40286428 
+##        247        248        249        250        251        252 
+## 0.14718587 0.47617203 0.40286428 0.40286428 0.36278927 0.47617203 
+##        253        254        255        256        257        258 
+## 0.47617203 0.29703882 0.55052111 0.55052111 0.47617203 0.47617203 
+##        259        260        261        262        263        264 
+## 0.09755076 0.36278927 0.29703882 0.12712971 0.27075592 0.36278927 
+##        265        266        267        268        269        270 
+## 0.20926972 0.18866855 0.14718587 0.36278927 0.29703882 0.21603037 
+##        271        272        273        274        275        276 
+## 0.29703882 0.21603037 0.21603037 0.09755076 0.21603037 0.43410607 
+##        277        278        279        280        281        282 
+## 0.21603037 0.21603037 0.21603037 0.55052111 0.36278927 0.33344823 
+##        283        284        285        286        287        288 
+## 0.47617203 0.47617203 0.47617203 0.07426831 0.16979063 0.21603037 
+##        289        290        291        292        293        294 
+## 0.16979063 0.36278927 0.14718587 0.14718587 0.26285686 0.29703882 
+##        295        296        297        298        299        300 
+## 0.36278927 0.14718587 0.12712971 0.20926972 0.47617203 0.33344823 
+##        301        302        303        304        305        306 
+## 0.21603037 0.09755076 0.68978139 0.21603037 0.47617203 0.14718587 
+##        307        308        309        310        311        312 
+## 0.07426831 0.40286428 0.36278927 0.16979063 0.14718587 0.14718587 
+##        313        314        315        316        317        318 
+## 0.21603037 0.16979063 0.21603037 0.18866855 0.18866855 0.18866855 
+##        319        320        321        322        323        324 
+## 0.26285686 0.47617203 0.47617203 0.16979063 0.11354753 0.14718587 
+##        325        326        327        328        329        330 
+## 0.18256478 0.14718587 0.16979063 0.21603037 0.09755076 0.14718587 
+##        331        332        333        334        335        336 
+## 0.21603037 0.07426831 0.21603037 0.36278927 0.36278927 0.36278927 
+##        337        338        339        340        341        342 
+## 0.27075592 0.14718587 0.11354753 0.20926972 0.20926972 0.14718587 
+##        343        344        345        346        347        348 
+## 0.62267949 0.29703882 0.36278927 0.47617203 0.47617203 0.36278927 
+##        349        350        351        352        353        354 
+## 0.16979063 0.21603037 0.40264179 0.55052111 0.11354753 0.21603037 
+##        355        356        357        358        359        360 
+## 0.33344823 0.27075592 0.43410607 0.26285686 0.24615643 0.24615643 
+##        361        362        363        364        365        366 
+## 0.27075592 0.47617203 0.18866855 0.37217517 0.11354753 0.14718587 
+##        367        368        369        370        371        372 
+## 0.16979063 0.21603037 0.21603037 0.43410607 0.47617203 0.36278927 
+##        373        374        375        376        377        378 
+## 0.47617203 0.40286428 0.11354753 0.30553931 0.11354753 0.21603037 
+##        379        380        381        382 
+## 0.33344823 0.40264179 0.62267949 0.47617203</code></pre>
+<p><em>Picturing the prediction</em></p>
+<pre class="r"><code>library(dplyr); library(ggplot2)
+
+g &lt;- ggplot(alc2016, aes(x = probability, y = high_use, col=prediction))
+
+g + geom_point()</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABIAAAAMACAMAAABrYew+AAAArlBMVEUAAAAAADoAAGYAOpAAZrYAv8QzMzM6AAA6ZmY6kJA6kLY6kNtNTU1NTW5NTY5NbqtNjshmAABmZgBmZmZmtrZmtv9uTU1uq+SOTU2Ojk2Oq6uOyP+QOgCQkDqQkLaQ2/+rbk2rjk2r5P+2ZgC2kDq2///Ijk3I///bkDrbtmbb///kq27kyI7k///r6+vy8vL4dm3/tmb/yI7/25D/5Kv//7b//8j//9v//+T///+p2jEOAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO2d62Ibh5WkOYkUZUZMYs2sbO3aO+MNNwpntNkVZVs23v/FttHdABpAA+gGqnAKqPp+xCRuxU84p4JLg3xYhBBCEQ/VP0AIwZcUUAihjBRQCKGMFFAIoYwUUAihjBRQCKGMFFAIoYwUUAihjBRQCKGMFFAIoYwUUAihjBRQCKGMFFAIoQyxAvq/l4O4jXNiq3JrUq1s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xRICgiE2oySU61s5XSr1xQIoIA+PQ74bvH1w/qbb9rzv37489/7i3Zf/vzt5vLfb98W8U4jozaj5FQrWzndy5dWBmoBPbbNkwKi5takWtnK6V6+tDKgnoJtWmbzVVM03yxGC+gv/zhwM5fdX58bdu609qTJ1510Vv/tzqmbn311xpToo5c5cQPd2YtJSQcuMTx58PXp22tsJ/3LTv7nn3iN1T/y64Z5t3vOVTaxBwfzkludkHvo9PuBWUBN0yy/vFoBfW5Z7J80+bpTzuq/3b3C+mdfnTEl+uhlTtxAf/ZiStKBSwxPHnw94SdfLCb9y07+5596jf4f+fXr2Yt/xlUGsYcG86JbnZB76PT7gVpA3ZfXKqDPn/emd+Skydc9cNbnbQYzMXr+hF442nsn6mnZt6eTDlxiePLg6yk/+WLSv+zkf/7J1+j+kV+/nr34Z1xlGHtgMC+71Qm5B3+eu4FaQF8er1hAIzs/rQaOX3DnrN1+WV+h/9n3zp/QC0d770Q9TUk6cInhyYOvJ/2j4S407xrtP/Lr17MX/4yrbMWOD+aFtzoh9+DPczcwC+jL4/TXgP7QccFPsBneYydNvu6Bs/a2/uDFT0cfvcyJG9jPOZx04BLDkwdfT/pHw13ojGts9n7q7Z5zlbJb9YJRQJv3uNqiOfYu2LqJUkBzzkwBpYDuBGoBfb9z1pEC6rng4epmeI+dNPm6B87a2/rNo+Lx8/MU7PiF5l0jT8H6n+duoD0F+/T4p7/unpUXoSen5kXo8dz2f/Mi9P3Aew3o05FHQHkbfsKPd+IG+rPzNvw0LmqKvA1Pg/gi9MfuQOjmhNVjof7AoByIOO3HO3ED3dk5EHEilzRFDkSkQSygrx+6D4P99uP6Axdf2hd9aAV09E4jo3a0PjnVylZOF7S0CjDfhl89Cfu0fq354+N3ixQQNrcm1cpWThe0tAowC6h56NM2zc/fdk/Gmu/b/6aAkLk1qVa2crqgpVWA/Fmw9hHP8ojEju7FoOGn4XeqiHinkVGbUXKqla2cLmhpFaAW0Pp16OaLze8HSgFBc2tSrWzldEFLq0B+IyIItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyulWrymQFBAItRklp1rZyuleYROfH373t+Y/Tw+//6/DFzp+7iRSQCDUZpScamUrp3uFTTxeQC/dqSmgGXcaGbUZJada2crpXmETjxbQ6tQU0Iw7jYzajJJTrWzldK+wiX0BjQMonhVHCujp4eGf/mPx9BaUNAninUZGbUbJqVa2crpX2MTyAnp+eFgW0K8/HPtB4BDvNDJqM0pOtbKV073CJlYXUNs/TQH98u4BF3Ya4p1GRm1GyalWtnK6M7eqWeK3yyc0Dw/v2++bRxXvf3rTf9t88zDc8faMV3uvAbUXa54RLVbd0Nzkzrmrb9q45/4ipzhQQM1P8bu//fKuCVw20PuZwudDvNPIqM0oOdXKVk535lY1O/wvP3St0XZEUxf/tvxmWTF9myw7Z7FYNUlz1v/cLqDnwaX2C2h9I2/7uH9+19/MyWdPBwqoveW2gJY/0quZwudDvNPIqM0oOdXKVk535lYtH0S0S/zU/WfZMs1q//rvbXW0HdKfs/rv06o8+orpL/bUV8zOu2DP3YVX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QKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgaSAQKjNKDnVylZOt3pNgVxQQD9/+7jiz39vT/ntx8fv+jO/fuhP6/nUXu773Sv2p6wh3mlk1GaUnGplK6d7/tLKAS2g5pS//KM7c7uAvn4YXjAFhMytSbWyldM9f2nluKiAth/kLBYf//zfV42yVUDNI6O2mJrm+ab9z6qm9phwp3xuOHbW4vil96/enXLqZve+3Tl187OvzjiUdEpmfdroj7Q5sftqceiCJ3MOX+TgpddnLBafJ9zkpNxZ1xgbkNcNE2544sXGYw8O5iW3evr2UkDH2Cugrx/+8n/ahlnsFND6kj9/+6e/XlhAnw9PfnfW4uil96/+ecCUxP7b3Susf/bVGYeSTsmsTxv9kTYn9l8tjv6THMk5fJGDl96csTj2DzYrd941Rgbk9etJJTDxYgdiDw3mRbd6+vZSQMfYK6Avj9+te2ergL6saql5KPT9ZQV0pCpGzto7af8yn7c4fbOfD1xh9bN/PnSBI9mjcaM/0ubE1VeLY/8kR3IOX+TgpUcuM6XU5jTQqWvsD8jr15NKYOLFDsUeGMzLbvX07aWAjrFbQL/92Dy8+di/DD3+CGj17dkFdKQqRs7aO2n/Mp93OHWzu5dfX6H/2ffOH0k6JrN//bFCHeeMf7SRixy89OhlppTa9AY6eY29AXn9elIJTLzYIQ4M5oW3evr2UkDH2C2gtle+9C9D774GtHoMtL7gDn/oOJW5mdApZ+2dtH+Z3SU+dbN7W3/w4oeTjsnsX//z0Vs/+rOf/kcbucgEteHPcfAmJ+VefI3NziIuNhP0rXJ+Sm0g74J15fJp+eDn64flqzwH3gX7bveK6zfNUkAHr58COkYK6MbBFdBvP7aV87H7bvc4oP7Cu2/D7z4UOvUgdTOhU87aO2n/MrtLfOpm97Z+86h4/Pw8BTt+oXnXyFOw/ue5G3BPwfpXmr90JbNbQEs+9g2UF6GPyOwt+YEfZvVVXoSeVAGXNUVehKaBK6CPWwcXjhVQ+1Tsm7wNf1xmZ8kP/jD9V3kbfloFXNQUeRueBqyA1gc7d8+rhgW0el1oseheo86BiEdltorgyA/TfZUDESdWwCVNkQMRacAKaH2sT3ew4bCAuqN/+jMvLqBT5Gj9a6Ra2crpnr+0cqAKqD0IqP9qWUVbT8E+rT4s1nx16VOws+80MmozSk61spXTPX9p5UAV0KBU2pehtwpo+fSsfQz08fHij2KcfaeRUZtRcqqVrZzu+UsrB6qAPq1/Eceybr4fviT0/fCN9+8X25+G36ki4p1GRm1GyalWtnK65y+tHKAC2nrA87Gple0CWj4s2hyxmAJC5takWtnK6Z6/tHLkNyKCUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGBUJtRcqqVrZxu9ZoCSQGB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" width="576" /></p>
+<pre class="r"><code>table(high_use = alc2016$high_use, prediction = alc2016$prediction) %&gt;% prop.table()%&gt;%addmargins()</code></pre>
+<pre><code>##         prediction
+## high_use      FALSE       TRUE        Sum
+##    FALSE 0.66753927 0.03403141 0.70157068
+##    TRUE  0.26701571 0.03141361 0.29842932
+##    Sum   0.93455497 0.06544503 1.00000000</code></pre>
+<p>When prediction predicts a false in high alcoholic use, 66% of the time it really is false, but 27% of the time the real data would give true values instead. Then again when prediction says true on high alcoholic consumption, the real data can be false as often as true.</p>
+<p>Compute the total proportion of inaccurately classified individuals (= the training error) and comment on all the results. Compare the performance of the model with performance achieved by some simple guessing strategy.</p>
+<p><em>How well did we do in our prediction?</em></p>
+<pre class="r"><code>loss_func &lt;- function(class, prob) {
+  n_wrong &lt;- abs(class - prob) &gt; 0.5
+  mean(n_wrong)
+}
+
+loss_func(class = alc2016$high_use, prob = alc2016$probability)</code></pre>
+<pre><code>## [1] 0.3010471</code></pre>
+<p>We have 30% “penalty”, which means that 30% of our predictions are not correctly classified compared to actual data.</p>
+<p><em>Let’s quess!</em> What if we’d guess that when our model give the prediction, it never guesses right</p>
+<pre class="r"><code>loss_func &lt;- function(class, prob) {
+  n_wrong &lt;- abs(class - prob) &gt; 1
+  mean(n_wrong)
+}
+
+loss_func(class = alc2016$high_use, prob = alc2016$probability)</code></pre>
+<pre><code>## [1] 0</code></pre>
 <hr />
 </div>
 </div>

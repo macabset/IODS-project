@@ -9,8 +9,8 @@ output: html_document
 The data Wrangling part can be seen in my github: https://github.com/macabset/IODS-project/blob/master/data/create_alc.R
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-full_mat <- read.csv("C:/Users/Petri/Documents/GitHub/IODS-project/data/student-mat.csv", header = TRUE, sep=";")
-full_por <- read.csv("C:/Users/Petri/Documents/GitHub/IODS-project/data/student-por.csv", header = TRUE, sep=";")
+full_mat <- read.csv("C:/Users/Murmeli/Documents/GitHub/IODS-project/data/student-mat.csv", header = TRUE, sep=";")
+full_por <- read.csv("C:/Users/Murmeli/Documents/GitHub/IODS-project/data/student-por.csv", header = TRUE, sep=";")
 library(dplyr)
 join_by <- c("school","sex","age","address","famsize","Pstatus","Medu","Fedu","Mjob","Fjob","reason","nursery","internet")
 joined_math_por <- inner_join(full_mat, full_por, by= join_by, suffix= c(".full_mat", ".full_por"))
@@ -37,8 +37,8 @@ library(ggplot2)
 alc <- mutate(alc, alc_use= (Dalc + Walc)/2)
 alc <- mutate(alc, high_use = (alc_use) > 2)
 
-write.csv(alc, file = "C:/Users/Petri/Documents/GitHub/IODS-project/data/create_alc.csv", row.names = FALSE)
-alc2016 <- read.csv("C:/Users/Petri/Documents/GitHub/IODS-project/data/create_alc.csv")
+write.csv(alc, file = "C:/Users/Murmeli/Documents/GitHub/IODS-project/data/create_alc.csv", row.names = FALSE)
+alc2016 <- read.csv("C:/Users/Murmeli/Documents/GitHub/IODS-project/data/create_alc.csv")
 
 ```
 ##Part 2
@@ -107,14 +107,65 @@ m2 <- glm(high_use ~ famrel + sex + studytime, data = alc2016, family = "binomia
 summary(m2)
 coef(m2)
 ```
-The coefficient here are famrel, sexM and studytime, which are being compared to high_use (intercept). THe coefficients tell that every time the high alcoholic use rise, so does (or in this case lowers with famrel and studytime) the coefficient accorriding to its estimate. It seems that in our logistic model 2, all coefficient are valid and we can use all of them in the last phase.
+The coefficient here are famrel, sexM and studytime, which are being compared to high_use (intercept). THe coefficients tell that every time the high alcoholic use rise, so does (or in this case lowers with famrel and studytime) the coefficient accorriding to its estimate. For example, the negaative predictor of studytime means that all other thigs beaing equall, if high alcoholic use, family relationships are less likely to be good. It seems that in our logistic model 2, all coefficient are valid and we can use all of them in the last phase.
 
-*Confidence Intervals*
-
+*Confidence intervals for the coefficients as odds ratio*
 ```{r}
-confint(m2)
+OR <- coef(m2) %>% exp
+CI <- exp(confint(m2))
+cbind(OR, CI)
 ```
+SexM has the widest gap in confidence intervals.This should mean that there's 95% probability that odds ratio of the sexM is between 1.2-3.3.The wider the gap the more inaccurate our mean value 2.066 is. The odds for male to have high alcoholic sonsumption is 2 times larger than for femal. When takking 5 scale explaining variable famrel, OR being under one, it means that there's bigger probability have high alcoholic consumption when there's less the property famrel: In English: the lower the famrel tha higher the consumption.
 
 ###2.4.Predictiong power of the model
-2x2 cross tabulation of predictions versus the actual values 
+Let's see how our model stands in prediction power when adding new data.In our added data, we predict for every observation what is the likehood of being high alcoholic consumer. Then in order to make it binary, we set the value 0.5: if our model predicts the probability of being high alcoholic consumer more than 0.5, it states High_use as true. Then we compare the prediction to what the actual status of the observation is: is it true that that student is a high consumer if our model predicts so?
 
+```{R}
+probabilities <- predict(m2, type = "response")
+
+alc2016 <- mutate(alc2016, probability = probabilities)
+
+alc2016 <- mutate(alc2016, prediction = probability > 0.5)
+
+table(high_use = alc2016$high_use, prediction = alc2016$prediction)
+probabilities
+
+```
+*Picturing the prediction*
+
+```{r}
+library(dplyr); library(ggplot2)
+
+g <- ggplot(alc2016, aes(x = probability, y = high_use, col=prediction))
+
+g + geom_point()
+table(high_use = alc2016$high_use, prediction = alc2016$prediction) %>% prop.table()%>%addmargins()
+```
+When prediction predicts a false in high alcoholic use, 66% of the time it really is false, but 27% of the time the real data would give true values instead. Then again when prediction says true on high alcoholic consumption, the real data can be false as often as true.
+
+Compute the total proportion of inaccurately classified individuals (= the training error) and comment on all the results. Compare the performance of the model with performance achieved by some simple guessing strategy.
+
+*How well did we do in our prediction?*
+
+```{r}
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+loss_func(class = alc2016$high_use, prob = alc2016$probability)
+```
+We have 30% "penalty", which means that 30% of our predictions are not correctly classified compared to actual data. 
+
+*Let's quess!*
+What if we'd guess that when our model give the prediction, it never guesses right
+
+```{R}
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 1
+  mean(n_wrong)
+}
+
+loss_func(class = alc2016$high_use, prob = alc2016$probability)
+
+```
