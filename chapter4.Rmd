@@ -1,0 +1,190 @@
+---
+title: "chapter 4"
+author: "Maika"
+date: "13 helmikuuta 2017"
+output: html_document
+---
+
+#Clustering and classification
+##Classification
+
+```{r}
+library(MASS)
+data("Boston")
+str(Boston)
+dim(Boston)
+
+```
+
+Here is our Boston dataset, which is one of R's own datasets. It conserns about Housing values in the suburbs of Boston, USA. It has 14 variables to explain the values and 506 observations, which consern about the town.
+
+
+
+```{r}
+summary(Boston)
+```
+The summary of our 14 variables show that all but 2 of our variables are numeric and continuous. We have binary variables chas, which gives 1 if tract is situated by the Charles river, and we also have rad, which gives and index for accesibility for radial highways.
+
+*Visualizing correlation*
+
+
+```{r}
+library(dplyr); library(MASS); library(corrplot)
+cor_matrix<-cor(Boston) %>% round(digits=2)
+cor_matrix
+corrplot(cor_matrix, method="circle", type="upper", cl.pos="b", tl.pos="d", tl.cex=0.6)
+```
+
+Here we can see correlations between all the variables visualized as pairs. Only the upper side is needed, since it's symmetric. The bigger the dot and stronger the color, the stronger the correlation, too. 
+
+Strong negative correlation seems to be between 1. medv and lstat, 2. age and dis, 3. nox and dis and 4. indus and dis. This means that 1: theless there is lower status inhabitants the higher value of the owner-occupied homes, 2: the younger the people the closer the Boston employments centres are, 3: and also, the closer to employmetn centres the less nitrogen oxides and lastly 4: the closer to employment centre the less industrial workers in the area.
+
+The strongest positive correlation is between tax and rad (corr. 0.91). The better contacts with radial highways, the bigger property tax-rate.
+
+Because these have the strongest correlations, I belive these are the ones we need to consentrate later on.
+
+*Scaling the data*
+
+We use scale to standardize our data. The variables communicate then better with eash other, so to speak. WE also want our new scales as data frame instead of matrix.
+
+
+```{r}
+boston_scaled <- scale(Boston)
+summary(boston_scaled)
+class(boston_scaled)
+boston_scaled<- as.data.frame(boston_scaled)
+boston_scaled
+```
+Because we have scaled our data, all observations are between integral 10. Now they can be handles together and seen the real sitances of these groups. This will help us in the clustering part.
+
+But first we need to create new crime rate to our data. 
+
+```{r}
+boston_scaled <- scale(Boston)
+boston_scaled<- as.data.frame(boston_scaled)
+scaled_crim <- boston_scaled$crim
+summary(scaled_crim)
+crim_quant <- quantile(scaled_crim)
+crime <- cut(scaled_crim, breaks = crim_quant, include.lowest = TRUE, labels = c("low", "med_low", "med_high", "high"))
+
+table(crime)
+boston_scaled <- dplyr::select(boston_scaled, -crim)
+
+boston_scaled <- data.frame(boston_scaled, crime)
+```
+
+After our scaling we are able to make new variable crime to our dataset. WE use crim in our scaled boston dataset and use cut to adjust it to create categorical variable crime. WE have categories low, med low, med high and high based on quantiles of the crim. So there's 127 observations in the crimne low category, which are all the observations under 25% of all observations in crime. Since the old crim isn't necessary anymore, we can drop that out from our boston scaled.
+
+Before we actually can use our model for clustering, we have to make sure that we can test how well our model works: That's why we're making train set to create our model and test set to predict our model to the test set. No I'll divide our dataset, so 80% will be used as train set and 20% to test set.
+
+WE also want to save our crime data from the test dataset, so we can use it as our target variable.
+
+```{r}
+n <- nrow(boston_scaled)
+random <- sample(n,  size = n * 0.8)
+# train set
+train <- boston_scaled[random,]
+# test set 
+test <- boston_scaled[-random,]
+#save crime from test
+correct_classes <- test$crime
+# remove crime from test data
+test <- dplyr::select(test, -crime)
+```
+
+Now we are ready to use Linear Discriminant Analysis to cluster our data. LDA is a classification method, where we need to know the classes before hand, but they can be trained with our data.
+
+In our lda we have crime as target variable against all other variables. Here we obviously use our train set to create the model.
+
+Then predict the classes with the LDA model on the test data. Cross tabulate the results with the crime categories from the test set. Comment on the results. (3 points)
+
+```{r}
+# linear discriminant analysis
+lda.fit <- lda(formula= crime ~ ., data = train)
+
+lda.fit
+
+# the function for lda biplot arrows
+lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "red", tex = 0.75, choices = c(1,2)){
+  heads <- coef(x)
+  arrows(x0 = 0, y0 = 0, 
+         x1 = myscale * heads[,choices[1]], 
+         y1 = myscale * heads[,choices[2]], col=color, length = arrow_heads)
+  text(myscale * heads[,choices], labels = row.names(heads), 
+       cex = tex, col=color, pos=3)
+}
+
+# target classes as numeric
+classes <- as.numeric(train$crime)
+
+# plot the lda results
+plot(lda.fit, dimen = 2, col=classes, pch=classes)
+lda.arrows(lda.fit, myscale = 1)
+```
+
+We want to find out what is the formula to predict crime rate in Boston. THe red arrows in the middle are the variables that are used to find crime rates. Now lets use our test set to see if we our model really predicted the crime rates correctly.
+
+
+
+```{r}
+# predict classes with test data
+lda.pred <- predict(lda.fit, newdata = test)
+
+# cross tabulate the results
+table(correct = correct_classes, predicted = lda.pred$class)
+```
+Here is a cross tabulation with crime categories our model predicted against the real categories.
+
+When the real value was low, the model predicted half of the time to low, but almost as many times to med_low and 2 instances to med_high. Almost same situation is also with med_low: half of the time our model is right and half is not. Then again med high is almost the same in correct observations as in our model and high crime rate is perfectly predicted by our model. So high end of crime rate is definitely better predicted than low end.
+
+##Clustering
+
+ Run k-means algorithm on the dataset. Investigate what is the optimal number of clusters and run the algorithm again. Visualize the clusters (for example with the pairs() or ggpairs() functions, where the clusters are separated with colors) and interpret the results. (4 points)
+
+*Scaling again*
+```{r}
+data("Boston")
+boston_scaled2 <- scale(Boston)
+summary(boston_scaled2)
+class(boston_scaled2)
+boston_scaled2<- as.data.frame(boston_scaled2)
+boston_scaled2
+```
+
+*Distances calculated by manhattan method*
+```{r}
+
+dist_eu <- dist(boston_scaled2)
+
+# look at the summary of the distances
+summary(dist_eu)
+
+
+```
+*k-means*
+
+```{r}
+library(ggplot2)
+set.seed(123)
+
+# euclidean distance matrix
+
+# determine the number of clusters
+k_max <- 10
+
+# calculate the total within sum of squares
+twcss <- sapply(1:k_max, function(k){kmeans(dist_eu, k)$tot.withinss})
+
+# visualize the results
+plot(1:k_max, twcss, type='b')
+
+# k-means clustering
+km <-kmeans(dist_eu, centers = 2)
+
+# plot the Boston dataset with clusters
+pairs(boston_scaled2, aes(colour = km$cluster))
+
+```
+
+INTERPRET THE RESULTS:
+
