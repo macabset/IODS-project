@@ -166,7 +166,6 @@ boston_scaled2 <- scale(Boston)
 summary(boston_scaled2)
 class(boston_scaled2)
 boston_scaled2<- as.data.frame(boston_scaled2)
-boston_scaled2
 ```
 
 ###3.1 Distances
