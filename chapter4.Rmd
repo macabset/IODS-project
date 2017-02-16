@@ -139,8 +139,7 @@ When the real value was low, the model predicted half of the time to low, but al
 
 ##Clustering
 
- Run k-means algorithm on the dataset. Investigate what is the optimal number of clusters and run the algorithm again. Visualize the clusters (for example with the pairs() or ggpairs() functions, where the clusters are separated with colors) and interpret the results. (4 points)
-
+Now we scale again our data to use it for clustering method. Again, we need scaling to make distances measurable. 
 *Scaling again*
 ```{r}
 data("Boston")
@@ -151,7 +150,9 @@ boston_scaled2<- as.data.frame(boston_scaled2)
 boston_scaled2
 ```
 
-*Distances calculated by manhattan method*
+*Distances calculated by euclidean method*
+With clustering we do not know the number of proper classes before hand, so we need to find them out by using distance method. I am using the standard euclidean distance method here.
+
 ```{r}
 
 dist_eu <- dist(boston_scaled2)
@@ -162,9 +163,10 @@ summary(dist_eu)
 
 ```
 *k-means*
+k-means clusters our observations into certain number of clusers, that it calculates the most preferable. It clusters by grouping observations to the nearest mean. K-mean tries to find the optimal amount of clusters from the data. With function pairs we see a sharp drop when there´s 2 clusters. That seem to be the optimal number of clusters to our data according to k-means method.
 
 ```{r}
-library(ggplot2)
+library(ggplot2); library(GGally)
 set.seed(123)
 
 # euclidean distance matrix
@@ -181,10 +183,18 @@ plot(1:k_max, twcss, type='b')
 # k-means clustering
 km <-kmeans(dist_eu, centers = 2)
 
+boston_scaled2$km <- as.factor(km$cluster)
+
 # plot the Boston dataset with clusters
-pairs(boston_scaled2, aes(colour = km$cluster))
+ggpairs(boston_scaled2, ggplot2::aes(colour=km))
 
 ```
 
-INTERPRET THE RESULTS:
+
+##Conclusions
+
+In this exercise we had two different methods to divide our data into groups based on their distance. In our first method (Classification), we divided the data by 4 classes of crime waves. It looked like it was quite accurate in the high end of crime but did not predict so well in low and mid low classes of criminality.
+
+In the second method we used clustering based on no assumption of the classes and tried to use k-means to find those classes. K-means found two classes to be optimal to separate the data, which we can se in our pairs. The only problem is that we do not know without LDA what is the method to separate the two classes,so we do not have a good way of saying if the 2 classes given from k-means are meaningful according the data or not.
+
 
