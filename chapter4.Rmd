@@ -6,7 +6,9 @@ output: html_document
 ---
 
 #Clustering and classification
-##Classification
+*This week we'll divide the data with 2 methods using R's own Boston dataset*
+
+##1. Our data
 
 ```{r}
 library(MASS)
@@ -16,17 +18,16 @@ dim(Boston)
 
 ```
 
-Here is our Boston dataset, which is one of R's own datasets. It conserns about Housing values in the suburbs of Boston, USA. It has 14 variables to explain the values and 506 observations, which consern about the town.
+Here is our Boston dataset, which is one of R's own datasets. It consists of Housing values in the suburbs of Boston, USA. It has 14 variables to explain the values of the 506 observations, which consern about the town.
 
 
 
 ```{r}
 summary(Boston)
 ```
-The summary of our 14 variables show that all but 2 of our variables are numeric and continuous. We have binary variables chas, which gives 1 if tract is situated by the Charles river, and we also have rad, which gives and index for accesibility for radial highways.
+The summary of our 14 variables shows that all but two of our variables are numeric and continuous. We have binary variables chas, which gives 1 if tract is situated by the Charles river, and we also have rad, which gives and index for accesibility for radial highways.
 
-*Visualizing correlation*
-
+###1.1 Visualizing the correlation
 
 ```{r}
 library(dplyr); library(MASS); library(corrplot)
@@ -37,15 +38,23 @@ corrplot(cor_matrix, method="circle", type="upper", cl.pos="b", tl.pos="d", tl.c
 
 Here we can see correlations between all the variables visualized as pairs. Only the upper side is needed, since it's symmetric. The bigger the dot and stronger the color, the stronger the correlation, too. 
 
-Strong negative correlation seems to be between 1. medv and lstat, 2. age and dis, 3. nox and dis and 4. indus and dis. This means that 1: theless there is lower status inhabitants the higher value of the owner-occupied homes, 2: the younger the people the closer the Boston employments centres are, 3: and also, the closer to employmetn centres the less nitrogen oxides and lastly 4: the closer to employment centre the less industrial workers in the area.
+
+* Strong negative correlation seems to be between:
++ 1. medv and lstat. This means that the less there is lower status inhabitants the higher the value of the owner-occupied homes
+
++ 2. age and dis: the younger the people the closer the Boston employment centres are 
+
++ 3. nox and dis also, the closer the region is to the employment centres the less nitrogen oxides
+
++ 4. indus and dis: the closer to employment centre the less industrial workers in the area
 
 The strongest positive correlation is between tax and rad (corr. 0.91). The better contacts with radial highways, the bigger property tax-rate.
 
-Because these have the strongest correlations, I belive these are the ones we need to consentrate later on.
+###1.2 Adjusting the data
 
 *Scaling the data*
 
-We use scale to standardize our data. The variables communicate then better with eash other, so to speak. WE also want our new scales as data frame instead of matrix.
+We use scale to standardize ou data. When variables have a common scal, we can calculate distances between means. We also want our new scales as data frame instead of matrix.
 
 
 ```{r}
@@ -53,11 +62,14 @@ boston_scaled <- scale(Boston)
 summary(boston_scaled)
 class(boston_scaled)
 boston_scaled<- as.data.frame(boston_scaled)
-boston_scaled
 ```
-Because we have scaled our data, all observations are between integral 10. Now they can be handles together and seen the real sitances of these groups. This will help us in the clustering part.
+Because we have scaled our data, all observations are between integral 10. Now we can work them as one and see the real distances of these groups. This will help us in the clustering part.
 
-But first we need to create new crime rate to our data. 
+##2. Classification
+
+We are going to divide the data with classification method. This is method where we need to know before hand the groups for discriminating groups, and we will use the crime variable for this. 
+
+First we need to adjust our variable and create new crime rates to our crim variable. From scaled Boston dataset we take the continuous variable crim and make it categorical.
 
 ```{r}
 boston_scaled <- scale(Boston)
@@ -73,11 +85,15 @@ boston_scaled <- dplyr::select(boston_scaled, -crim)
 boston_scaled <- data.frame(boston_scaled, crime)
 ```
 
-After our scaling we are able to make new variable crime to our dataset. WE use crim in our scaled boston dataset and use cut to adjust it to create categorical variable crime. WE have categories low, med low, med high and high based on quantiles of the crim. So there's 127 observations in the crimne low category, which are all the observations under 25% of all observations in crime. Since the old crim isn't necessary anymore, we can drop that out from our boston scaled.
+After our scaling we are able to make new variable crime to our dataset. The crime variable has categories low, med low, med high and high based on quantiles of the crim. So there's 127 observations in the low category, which are all the observations under 25% of all observations in crime. Since the old crim isn't necessary anymore, we can drop that out from our boston scaled.
 
-Before we actually can use our model for clustering, we have to make sure that we can test how well our model works: That's why we're making train set to create our model and test set to predict our model to the test set. No I'll divide our dataset, so 80% will be used as train set and 20% to test set.
+###2.1 Linear Discriminant Analysis
 
-WE also want to save our crime data from the test dataset, so we can use it as our target variable.
+No we're just about to use our data to divide our data to classes with Linear Discriminant Analysis(LDA).
+
+Before we actually can make a model for classification, we have to make sure that we can test how well our model works: That's why we're making train set to create our model and test set to predict our model to the test set. No I'll divide our dataset, so 80% will be used as train set and 20% to test set.
+
+We also want to exclude our crime data from the test dataset, so we can use it as our target variable.
 
 ```{r}
 n <- nrow(boston_scaled)
@@ -92,11 +108,10 @@ correct_classes <- test$crime
 test <- dplyr::select(test, -crime)
 ```
 
-Now we are ready to use Linear Discriminant Analysis to cluster our data. LDA is a classification method, where we need to know the classes before hand, but they can be trained with our data.
 
-In our lda we have crime as target variable against all other variables. Here we obviously use our train set to create the model.
+In our lda we have crime as target variable against all other variables. Here we obviously use our train set to create the model. Now we're ready to run the LDA, and it should create a model to predict crime rates using all other variables.
 
-Then predict the classes with the LDA model on the test data. Cross tabulate the results with the crime categories from the test set. Comment on the results. (3 points)
+###2.2 Creating the model
 
 ```{r}
 # linear discriminant analysis
@@ -122,9 +137,11 @@ plot(lda.fit, dimen = 2, col=classes, pch=classes)
 lda.arrows(lda.fit, myscale = 1)
 ```
 
-We want to find out what is the formula to predict crime rate in Boston. THe red arrows in the middle are the variables that are used to find crime rates. Now lets use our test set to see if we our model really predicted the crime rates correctly.
+We want to find out what is the formula to predict crime rate in Boston. THe red arrows in the middle are the variables that are used to find crime rates. (In our original interpretation of the variables the tax and rad had a strong correlation. It seems that the rad arrow is also in very strong role in our lda.) 
 
+Now lets use our test set to see if we our model really predicted the crime rates correctly.
 
+###2.3 Predicting data
 
 ```{r}
 # predict classes with test data
@@ -133,14 +150,16 @@ lda.pred <- predict(lda.fit, newdata = test)
 # cross tabulate the results
 table(correct = correct_classes, predicted = lda.pred$class)
 ```
-Here is a cross tabulation with crime categories our model predicted against the real categories.
+Here is a cross tabulation with crime categories our model predicted against the real categories from test set.
 
 When the real value was low, the model predicted half of the time to low, but almost as many times to med_low and 2 instances to med_high. Almost same situation is also with med_low: half of the time our model is right and half is not. Then again med high is almost the same in correct observations as in our model and high crime rate is perfectly predicted by our model. So high end of crime rate is definitely better predicted than low end.
 
-##Clustering
+##3. Clustering
 
-Now we scale again our data to use it for clustering method. Again, we need scaling to make distances measurable. 
-*Scaling again*
+Now we scale again our data to use it for clustering method. No we are not using crime for the base for classes but guess it with k-means. 
+
+Again, we need scaling to make distances measurable. 
+
 ```{r}
 data("Boston")
 boston_scaled2 <- scale(Boston)
@@ -150,8 +169,9 @@ boston_scaled2<- as.data.frame(boston_scaled2)
 boston_scaled2
 ```
 
-*Distances calculated by euclidean method*
-With clustering we do not know the number of proper classes before hand, so we need to find them out by using distance method. I am using the standard euclidean distance method here.
+###3.1 Distances
+
+With clustering we do not know the number of proper classes beforehand, so we need to find them out by using distance method. Now I am using the standard euclidean distance method.
 
 ```{r}
 
@@ -162,8 +182,9 @@ summary(dist_eu)
 
 
 ```
-*k-means*
-k-means clusters our observations into certain number of clusers, that it calculates the most preferable. It clusters by grouping observations to the nearest mean. K-mean tries to find the optimal amount of clusters from the data. With function pairs we see a sharp drop when there´s 2 clusters. That seem to be the optimal number of clusters to our data according to k-means method.
+###3.2 K-means
+
+K-means clusters our observations into certain number of clusters. It clusters by grouping observations to the nearest mean. K-mean tries to find the optimal amount of clusters from the data. With function "pairs" we see a sharp drop when there´s 2 clusters. That seem to be the optimal number of clusters to our data according to k-means method.
 
 ```{r}
 library(ggplot2); library(GGally)
@@ -191,9 +212,9 @@ ggpairs(boston_scaled2, ggplot2::aes(colour=km))
 ```
 
 
-##Conclusions
+##4. Conclusions
 
-In this exercise we had two different methods to divide our data into groups based on their distance. In our first method (Classification), we divided the data by 4 classes of crime waves. It looked like it was quite accurate in the high end of crime but did not predict so well in low and mid low classes of criminality.
+In this exercise we had two different methods to divide our data into groups based on their distance. In our first method (Classification), we divided the data by 4 classes of crime rates. It looked like it was quite accurate in the high end of crime but did not predict so well in low and mid low classes of criminality.
 
 In the second method we used clustering based on no assumption of the classes and tried to use k-means to find those classes. K-means found two classes to be optimal to separate the data, which we can se in our pairs. The only problem is that we do not know without LDA what is the method to separate the two classes,so we do not have a good way of saying if the 2 classes given from k-means are meaningful according the data or not.
 

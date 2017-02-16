@@ -1,8 +1,5 @@
 #16.2.2017//Maija Absetz
-#DAta Wrangling for the dimensionality
-
-
-#how to make more readable?
+#Data Wrangling for the dimensionality
 
 #Setting the working directory to my computer:
 
@@ -12,7 +9,7 @@ library(dplyr)
 
 setwd("C:/Users/Murmeli/Documents/GitHub/IODS-project/data/")
 getwd()
-#REad files Hman development and gender inequality to R
+#Read files Human development and gender inequality to R
 
 hd <- read.csv("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/human_development.csv", stringsAsFactors = F)
 
@@ -24,7 +21,7 @@ str(gii)
 dim(gii)
 
 #We have 2 datasets that we eventually want to combine, but let's first see what we have.
-#Human development focuses what are the factors that determine how well our country ranks when looking at human development. It has 8 variables and 195 observations. VAriables are both numeric and character.
+#Human development focuses what are the factors that determine how well our country ranks when looking at human development. It has 8 variables and 195 observations. Variables are both numeric and character.
 #Gender inequality tries to grasp the inequality between men and women in achievements. It focuses on health, empowerement and work markets. This dataset contains 10 variables and also 195 observations( since it's based on the same resaerch??). This dataset has also both numeric and character variables.
 
 summary(hd)
@@ -76,4 +73,6 @@ colnames(hdi_gii)
 
 write.csv(hdi_gii, file = "human.csv", row.names = FALSE)
 human <- read.csv("human.csv", sep=",", header= T)
+
+#And final check that everything works.
 str(human)
