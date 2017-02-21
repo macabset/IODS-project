@@ -1,0 +1,102 @@
+---
+title: "chapter5"
+author: "Maika"
+date: "21 helmikuuta 2017"
+output: html_document
+---
+
+#Dimensionality reduction
+
+*This week we aim to reduce dimensions in order to make the relations in the data more understandable*
+
+##Reduction with continuous variables
+###Our data
+This dataset originates from United Nations Development Programme(http://hdr.undp.org/en/content/human-development-index-hdi). It's goal is to compare nations with more sifisticated methods than just looking at GNP - through human capabilities.
+
+*Variables*
+I have created subset with 8 variavles and 155 observations for our purposes. Variables modified from original dataset are Country, sex_edu2, Lab_ratio and GNI. For further infirmation about modifications made, you can see in my github repository: https://github.com/macabset/IODS-project/blob/master/data/create_human.R
+
+Underneath are the names of the 8 variables and their description.
+
+Country:      used as rownames
+
+Sex_edu2:     ratio of females to males in at least secondary education
+Lab-ratio:    ratio of female labour force to male labour force
+Edu_expect:   Expected years of schooling
+Life_expect:  Life xpectancy at birth
+GNI:          Gross National Income per capita
+Mom_death:    Maternal mortality ratio
+Young_birth:  Adolescent birth rate
+Present_parl: Percentage of female representatives in parliament
+
+*observations*
+In addition I have excluded missing values from our data set by removing them.
+
+```{r}
+setwd("C:/Users/Petri/Documents/GitHub/IODS-project/data/")
+human <- read.table("human.csv", sep = ",", header = TRUE)
+str(human)
+dim(human)
+```
+
+*Summaries*
+
+
+```{r}
+summary(human)
+complete.cases(human)
+```
+
+All our variables are numeric and continuous (except the couhnty, which is used only as rownames). 
+
+```{r}
+library(GGally); library(dplyr); library(corrplot)
+cor(human)
+ggpairs(human)
+
+cor(human) %>% corrplot( method="circle", type="upper")
+
+```
+
+Our correlation plots show that the highest correlation is between Mom_death and Life_expect (-0.86), but closely after are Mom_death and eduexpect, young_birth and Life_expect, Young_birth and Edu_expect. *Whith these preliminary results can be assumed that 
+
++1. the higher mothers' mortal rate are the lower the life expectancies at birth. 
++2. the higher the mothers' mortal rate are the lower expected education levels
++3. the more there are adolescent births the lower life expectancy at birth.
++4. and the more there are young people giving births the lower the expected level of education.
+
+###PCA
+Principal component analysis is...
+
+Here we have made the PCA without scaling the data.
+
+
+```{r}
+pca_human <- prcomp(human)
+pca_human
+biplot(pca_human, choices = 1:2, cex = c(0.8, 1), col= c("grey40", "deeppink2"))
+```
+
+Standardize the variables in the human data and repeat the above analysis. Interpret the results of both analysis (with and without standardizing). Are the results different? Why or why not? Include captions in you plots where you describe the results by using not just your variable names, but the actual phenomenons they relate to. (0-4 points)
+
+And now let's do it properly with standardized variables.
+
+```{r}
+human.std <- scale(human)
+pca_human2 <- prcomp(human.std)
+biplot(pca_human2, choices= 1:2, cex = c(0.8, 1), col= c("grey40", "deeppink2"))
+```
+
+Interpret the results!
+
+
+
+## Multidimensional reduction with descrete variables
+###Data
+teadata
+
+
+
+
+```{r}
+```
