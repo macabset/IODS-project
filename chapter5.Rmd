@@ -5,7 +5,7 @@ date: "21 helmikuuta 2017"
 output: html_document
 ---
 
-#Dimensionality reduction
+#WORK IN PROGRESS: Dimensionality reduction
 
 *This week we aim to reduce dimensions in order to make the relations in the data more understandable*
 

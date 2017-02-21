@@ -2,6 +2,11 @@
 #Maija Absetz//27.1.2017
 
 #1. Data Wrangling (max 5p)
+
+#sET THE WOTKING DIRECTORY TO MAKE DATA MORE OPEN
+setwd("C:/Users/Petri/Documents/GitHub/IODS-project/data/")
+getwd()
+
 #1.1 Getting our data to R and exploring its content:
 
 full_learn14<- read.table( "http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-data.txt", sep="\t", header=TRUE)
@@ -11,7 +16,6 @@ dim(full_learn14)
 #Our data has got 60 variables and 184 observations in those 60 variables.
 #The structure shows what kind of observations do we have in our variables: factors, numbers, levels.
 
-install.packages("dplyr")
 library(dplyr)
 
 #1.2 Exploring and creating altogether 7 variables: gender, age, attitude, deep, stra, surf, points.
@@ -55,8 +59,8 @@ sub_learn14 <- filter(sub_learn14, points >! 0)
 
 ?write.csv
 
-write.csv(sub_learn14, file = "C:/Users/Murmeli/Documents/GitHub/IODS-project/data/learning2014.csv", row.names = FALSE)
-lrn2014 <- read.csv("C:/Users/Murmeli/Documents/GitHub/IODS-project/data/learning2014.csv")
+write.csv(sub_learn14, file = "learning2014.csv", row.names = FALSE)
+lrn2014 <- read.csv("learning2014.csv")
 
 head(lrn2014)
 
@@ -71,7 +75,6 @@ dim(lrn2014)
 #Dataset has been modified so that questions have been combined and point values of 0 have been removed.
 
 summary(lrn2014)
-install.packages("ggplot2")
 library(ggplot2)
 
 #In our summary we can see that all variables except gender are numeric with continuous values.
@@ -99,7 +102,6 @@ Figure2
 
 #2.3 Regression model
 #Choosing explaining variables
-install.packages("GGally")
 library(GGally)
 ggpairs(lrn2014, lower= list(combo = wrap("facethist", bins = 20)))
 

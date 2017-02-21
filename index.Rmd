@@ -31,3 +31,8 @@ author: Maija Absetz
 ```
 ***
 
+```{r child = "chapter5.Rmd"}
+```
+***
+
+

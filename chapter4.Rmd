@@ -183,7 +183,7 @@ summary(dist_eu)
 ```
 ###3.2 K-means
 
-K-means clusters our observations into certain number of clusters. It clusters by grouping observations to the nearest mean. K-mean tries to find the optimal amount of clusters from the data. With function "pairs" we see a sharp drop when thereÂ´s 2 clusters. That seem to be the optimal number of clusters to our data according to k-means method.
+K-means clusters our observations into certain number of clusters. It clusters by grouping observations to the nearest mean. K-mean tries to find the optimal amount of clusters from the data. With function "pairs" we see a sharp drop when there´s 2 clusters. That seem to be the optimal number of clusters to our data according to k-means method.
 
 ```{r}
 library(ggplot2); library(GGally)

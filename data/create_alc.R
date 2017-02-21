@@ -1,7 +1,9 @@
 #Maija Absetz// 4.2.2017
 #This is Rstudio exercice 2 data wrangling part for student alcohol consumption.
-full_mat <- read.csv("C:/Users/Petri/Documents/GitHub/IODS-project/data/student-mat.csv", header = TRUE, sep=";")
-full_por <- read.csv("C:/Users/Petri/Documents/GitHub/IODS-project/data/student-por.csv", header = TRUE, sep=";")
+setwd("C:/Users/Petri/Documents/GitHub/IODS-project/data/")
+getwd()
+full_mat <- read.csv("student-mat.csv", header = TRUE, sep=";")
+full_por <- read.csv("student-por.csv", header = TRUE, sep=";")
 str(full_mat)
 str(full_por)
 dim(full_mat)
@@ -55,6 +57,6 @@ alc <- mutate(alc, high_use = (alc_use) > 2)
 glimpse (alc)
 
 #Saving project to data file
-write.csv(alc, file = "C:/Users/Petri/Documents/GitHub/IODS-project/data/create_alc.csv", row.names = FALSE)
-alc2016 <- read.csv("C:/Users/Petri/Documents/GitHub/IODS-project/data/create_alc.csv")
+write.csv(alc, file = "create_alc.csv", row.names = FALSE)
+alc2016 <- read.csv("create_alc.csv")
 
