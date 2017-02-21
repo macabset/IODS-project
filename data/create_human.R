@@ -1,5 +1,7 @@
 #16.2.2017//Maija Absetz
 #Data Wrangling for the dimensionality
+#This data is originally from United Nations Development Programme(http://hdr.undp.org/en/content/human-development-index-hdi)
+
 
 #Setting the working directory to my computer:
 
@@ -57,8 +59,6 @@ colnames(gii)
 gii <- mutate(gii, Sex_edu2 = Edu2F / Edu2M)
 gii <- mutate(gii, Lab_ratio = LabF/LabM)
 colnames(gii)
-gii <- dplyr::select(gii, -sex_edu2)
-colnames(gii)
 
 #Join datasets by country
 join_by <- c("Country")
@@ -76,3 +76,45 @@ human <- read.csv("human.csv", sep=",", header= T)
 
 #And final check that everything works.
 str(human)
+
+#This is continuum for last week's data wrangling. We are continuing with the same data.
+#1. mutate data GNi to numeric
+
+human <- mutate(human, GNI = as.numeric(human$GNI))
+str(human)
+
+#2. Keep columns: (described in the meta file above):  "Country", "Edu2.FM", "Labo.FM", "Edu.Exp", "Life.Exp", "GNI", "Mat.Mor", "Ado.Birth", "Parli.F"
+
+keep_columns <- c("Country", "Sex_edu2", "Lab_ratio", "Edu_expect", "Life_expect", "GNI", "Mom_death", "Young_birth", "Present_parl")
+human <- select(human, one_of(keep_columns))
+str(human)
+
+#3.Remove rows with missing values
+  #create column with missing values and then filter leaving NA's out.
+complete.cases(human)
+data.frame(human[-1], comp = complete.cases(human))
+human_ <- filter(human, complete.cases(human))
+complete.cases(human_)
+
+#Let's clean the column country and filter regions out
+  #The last 7 rows with column country are infact regions instead of countries.
+last <- nrow(human) - 7
+# I'll choose everything until the last 7 observations, the 155's being Nigeria.
+human_ <- human[1:155, ]
+
+
+#4. add countries as rownames and remove country as column
+
+rownames(human_) <- human_$Country
+#Remove country as column
+human_ <- dplyr::select(human_, -Country)
+str(human_)
+
+
+#override the old data:
+
+write.csv(human_, file = "human.csv", row.names = TRUE)
+human <- read.csv("human.csv", sep=",", header= T)
+str(human)
+
+#It now has 9 variables, but that is because of the rownames included.
