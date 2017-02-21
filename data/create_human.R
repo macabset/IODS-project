@@ -9,7 +9,7 @@ library(Matrix)
 library(ggplot2)
 library(dplyr)
 
-setwd("C:/Users/Murmeli/Documents/GitHub/IODS-project/data/")
+setwd("C:/Users/Petri/Documents/GitHub/IODS-project/data/")
 getwd()
 #Read files Human development and gender inequality to R
 
@@ -100,7 +100,7 @@ complete.cases(human_)
   #The last 7 rows with column country are infact regions instead of countries.
 last <- nrow(human) - 7
 # I'll choose everything until the last 7 observations, the 155's being Nigeria.
-human_ <- human[1:155, ]
+human[1:155, ]
 
 
 #4. add countries as rownames and remove country as column
@@ -110,11 +110,11 @@ rownames(human_) <- human_$Country
 human_ <- dplyr::select(human_, -Country)
 str(human_)
 
-
 #override the old data:
 
-write.csv(human_, file = "human.csv", row.names = TRUE)
+write.csv(human_, file = "human.csv", row.names = FALSE)
 human <- read.csv("human.csv", sep=",", header= T)
 str(human)
-
+summary(human)
+complete.cases(human)
 #It now has 9 variables, but that is because of the rownames included.
