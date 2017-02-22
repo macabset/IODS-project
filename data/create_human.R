@@ -93,28 +93,34 @@ str(human)
   #create column with missing values and then filter leaving NA's out.
 complete.cases(human)
 data.frame(human[-1], comp = complete.cases(human))
-human_ <- filter(human, complete.cases(human))
-complete.cases(human_)
-
+human <- filter(human, complete.cases(human))
+complete.cases(human)
+str(human)
 #Let's clean the column country and filter regions out
   #The last 7 rows with column country are infact regions instead of countries.
 last <- nrow(human) - 7
+last
 # I'll choose everything until the last 7 observations, the 155's being Nigeria.
-human[1:155, ]
-
+human <- human[1:155, ]
+str(human)
 
 #4. add countries as rownames and remove country as column
 
-rownames(human_) <- human_$Country
+rownames(human) <- human$Country
 #Remove country as column
-human_ <- dplyr::select(human_, -Country)
-str(human_)
+human <- dplyr::select(human, -Country)
+str(human)
+head(human)
 
+#Now we have wanted 155 observations and 8 variables, with countries as rownames.
 #override the old data:
 
-write.csv(human_, file = "human.csv", row.names = FALSE)
+write.csv(human, file = "human.csv", row.names = FALSE)
 human <- read.csv("human.csv", sep=",", header= T)
 str(human)
 summary(human)
 complete.cases(human)
-#It now has 9 variables, but that is because of the rownames included.
+head(human)
+#Why won't the head(human) show countries as rownames when it showed it before making it as csv?
+
+
