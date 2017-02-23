@@ -7,34 +7,43 @@ output: html_document
 
 #WORK IN PROGRESS: Dimensionality reduction
 
-*This week we aim to reduce dimensions in order to make the relations in the data more understandable*
+*This week we aim to reduce dimensions so we can better notice the relations between variables in the data*
 
-##1. Reduction with continuous variables - Principal component analysis
+##1. Principal component analysis
 
 First part of our dimensionality reduction conserns with continuous variables. Dimensionality reduction in general aims to find the most essential dimensions that explain the data. In Principal Componen Analysis (PCA), we try to find the most essential components (PC1 and PC2) that best explain the data.
 
 ###1.1 Our data
 
-This dataset originates from United Nations Development Programme(http://hdr.undp.org/en/content/human-development-index-hdi). Its goal is to compare nations with more sofisticated methods than just looking at GNP - through human capabilities.
+This dataset originates from United Nations Development Programme(http://hdr.undp.org/en/content/human-development-index-hdi). Its goal is to compare nations with more sophisticated methods than just looking at GNP or - through human capabilities.
 
 *Variables*
-I have created subset with 8 variables and 155 observations for our purposes. Variables modified from original dataset are Country, sex_edu2, Lab_ratio and GNI. For further infirmation about modifications made, you can see in my github repository: https://github.com/macabset/IODS-project/blob/master/data/create_human.R
+I have created subset called "human" with 8 variables and 155 observations for our purposes in reducing variables. Variables modified from original dataset are Country, sex_edu2, Lab_ratio and GNI. For further infirmation about modifications made, you can go and check my github repository: https://github.com/macabset/IODS-project/blob/master/data/create_human.R
 
 Underneath are the names of the 8 variables and their description.
 
 Country:      used as rownames, regions not included
 
-Sex_edu2:     ratio of females to males in at least secondary education
-Lab-ratio:    ratio of female labour force to male labour force
-Edu_expect:   Expected years of education
-Life_expect:  Life expectancy at birth
-GNI:          Gross National Income per capita
-Mom_death:    Maternal mortality ratio
-Young_birth:  Adolescent birth rate
-Present_parl: Percentage of female representatives in parliament
+ + Sex_edu2:     ratio of females to males in at least secondary education
+ + Lab-ratio:    ratio of female labour force to male labour force
+ + Edu_expect:   Expected years of education
+ + Life_expect:  Life expectancy at birth
+ + GNI:          Gross National Income per capita
+ + Mom_death:    Maternal mortality ratio
+ + Young_birth:  Adolescent birth rate
+ + Present_parl: Percentage of female representatives in parliament
 
 *observations*
 In addition I have excluded missing values from our data set by removing them.
+```{r}
+#Packages we need in this workout
+library(GGally)
+library(dplyr)
+library(corrplot)
+library(FactoMineR)
+library(ggplot2)
+library(tidyr)
+```
 
 ```{r}
 getwd()
@@ -51,44 +60,45 @@ head(human)
 summary(human)
 ```
 
-All our variables are numeric and continuous (except the counrty, which is used only as rownames). 
+All our variables are numeric and continuous, which is as hoped for PCA analysis. But before we jump to analyzing with PCA, let'slook what we can say at this stage.
+
 ###1.2 Picturing human
 
 ```{r}
-library(GGally); library(dplyr); library(corrplot)
+
 cor(human)
 ggpairs(human)
 
-cor(human) %>% corrplot( method="circle", type="upper")
-
+cor(human) %>% corrplot( method="circle", type="upper", title= "Correlations between variables in human data")
 ```
 
 Our correlation plots show that the highest correlation is between Mom_death and Life_expect (-0.86), but closely after are Mom_death and eduexpect, young_birth and Life_expect, Young_birth and Edu_expect.
 
 * Whith these preliminary results can be assumed that
 
-  + 1. the higher mothers' mortal rate are the lower the life expectancies at birth. 
+  + 1. the higher the mothers' mortal rate are the lower the life expectancies at birth. 
 
   + 2. the higher the mothers' mortal rate are the lower expected education levels
 
-  + 3. the more there are adolescent births the lower life expectancy at birth.
+  + 3. the more there are adolescent births the lower the life expectancy at birth.
 
   + 4. and the more there are young people giving births the lower the expected level of education.
 
+All in all, this suggests that if we want our human capacity to be used well, we need to take care of the mothers and allow ways of having children a bit later.
+
 ###Principal component analysis
-In Principal Component Analysis(PCA), variables are in a sence reducet to 2 main components that describe the data. At the same time the original variables are left and their relations to principal components can be evaluated.
+In Principal Component Analysis(PCA), variables are reduced to 2 main components that describe the data. That is how we make our 8-dimensional dataset to 2-D dataset when picturing it. At the same time the original variables are left and their relations to principal components can be evaluated.
 
-Here we have made the PCA and biplotted it without scaling the data. In our biplot we see observations on grey and correlation arrows on pink. How observations and arrows situate in our plot is defined by the principal components PC1 and PC2. The arrows combine both the original data and its features to the principal components.
-
-
+*PCA*
 
 ```{r}
 pca_human <- prcomp(human)
 pca_human
-biplot(pca_human, choices = 1:2, cex = c(0.8, 1), col= c("grey40", "deeppink2"))
+biplot(pca_human, choices = 1:2, cex = c(0.8, 1), col= c("grey40", "deeppink2")) 
+
 ```
 
-
+First I have made the PCA and biplotted it without scaling the data. In our biplot we see observations on grey and correlation arrows on pink. How observations and arrows situate in our plot is defined by the principal components PC1 and PC2. The arrows combine both the original data and its features to the principal components.
 
 Here the variables are not measured in the same units. We have to scale them in order to give the same influence to each one. And now let's do it properly with standardized variables.
 
@@ -100,11 +110,11 @@ pca_human2 <- prcomp(human.std)
 biplot(pca_human2, choices= 1:2, cex = c(0.8, 1), col= c("grey40", "deeppink2"))
 ```
 
-If we compare the xcaled and the unscaled one, we clearly see that the correlation arrows look quite different.
+If we compare the scaled and the unscaled one, we clearly see that the correlation arrows look quite different. Scaled version is better so, that our variables are comparable.
 
-Next, we want to modify our plot, so the percentages of the variance grapped bu the principal omponents can be seen. PCA expects that the more variance the better the PC.
+Next, we want to modify our plot, so the percentages of the variance by the principal components can be seen. PCA expects that the more variance the better the PC.
 
-*Biplot PCA*
+*Scaled and modified PCA*
 ```{r}
 s <- summary(pca_human2)
 pca_pr <- round(100*s$importance[2, ], digits = 1)
@@ -118,13 +128,13 @@ biplot(pca_human2, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_la
 ```
 
 
-And underneath we have a graph from the same scaled PCA with only correlations arrows showing, since they are a bit mixed up in the original picture.
+And underneath we have a graph from the same scaled PCA with correlations arrows showing in a different graph than observations, since they are a bit mixed up in the original picture.
 
 *Scaled PCA with correlation arrows*
 
 ```{r}
 #Draw a pca with only arrows
-library(FactoMineR)
+
 res.pca = PCA(human, scale.unit= TRUE, ncp=5, graph=T)
 ```
 
@@ -136,29 +146,27 @@ The more mothers die the more young people give birth to children. This on the o
 
 The correlation between ratio of women to men working and women present in parliamen is visible but not as strong as previous connections. Nevertheless, the more women at labour markets, the better presentation they have in the parliament. These are positively correlated to PC2, which means that the better women are represented at the labour markets and at the parliament, the better state the nation has.
 
-
-## Multidimensional reduction with descrete variables - Multiple Correspondence Analysis
-In this section we need another data to work with Multiple Correspondense Analysis(MCA). It is also an dimension reduction tehnique designed for quantitative or categorical variables, and that's why we cannot use our human data set.
+##2. Multiple Correspondence Analysis
+In this section we need another data to work with Multiple Correspondense Analysis(MCA). That is a multidimensional reduction technique with descrete variables: it's designed for quantitative or categorical variables, and that's why we cannot use our human data set.
 
 Our goal is to find out if groups are close or far from each other. The closer the variables are to each other the more the same people have answered to both categories.
 
 ###Data - Tea time!
 
-The next part of reducing dimensions happens with R's own dataset "Tea". It's a questionnaire on people's tea drinking habbits and additionally some personal details. for more information, you can check for website:http://factominer.free.fr/classical-methods/multiple-correspondence-analysis.html. 
+The next part of reducing dimensions happens with R's own dataset "Tea". It's a questionnaire about how people drink tea and about their drinking habbits. For more information, you can check for website:http://factominer.free.fr/classical-methods/multiple-correspondence-analysis.html. 
 
-It has 300 observations and 36 variables. In the data we have either factor variables with varying levels or logical variables such as "sugar" or "no sugar", albeit age which is hear as categorical.
+The data set has 300 observations and 36 variables. In the data we have either factor variables with varying levels or logical variables such as "sugar" or "no sugar", albeit age which is here both categorical and continuous.
 
 
 ```{r}
-library(ggplot2);library(dplyr);library(tidyr);library(FactoMineR)
+#ggplot2, dplyr, tidyr and FactoMineR available
 data(tea)
 my_tea <- data.frame(tea)
 dim(my_tea)
 str(my_tea)
 summary(my_tea)
 ```
- Explore the data briefly: look at the structure and the dimensions of the data and visualize it. Then do Multiple Correspondence Analysis on the tea data (or to a certain columns of the data, it's up to you). Interpret the results of the MCA and draw at least the variable biplot of the analysis. You can also explore other plotting options for MCA. Comment on the output of the plots. (0-4 points)
-
+ 
 To find ou which might be the most interesting variables, let's make some pictures!
 
 *Picuring the tea data*
@@ -168,44 +176,50 @@ Bar plot
 gather(my_tea) %>% ggplot(aes(value))  + facet_wrap("key", scales = "free") + geom_bar() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
 ```
 
-for the sace of simplicity. I'll pick a sub dataset my_tea1 with 8 variables breakfast, sex, price, health, spirituality, tearoom, Tea, friends.
+for the sake of simplicity. I'll pick a sub dataset my_tea1 with 8 variables breakfast, sex, price, health, spirituality, tearoom, Tea and friends.
 
-The idea is to find out whether these groups have nothing incommon or nothing to do with each other. Does spirituality accure with expencive tea? Does gender have nothing to do with assumptions whether tea is healthy or not?
 
 ```{r}
+#Columns for our subset my_tea1
 keep_columns <- c("breakfast", "sex", "price", "healthy", "spirituality", "friends", "Tea", "tearoom")
 my_tea1 <- dplyr::select(my_tea, one_of(keep_columns))
+#Picturing with bars
 gather(my_tea1) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
 ```
+
+###MCA
+The idea is to find out whether these groups have anything incommon or nothing to do with each other. It examines the links between variables based on the variance of the observations.. Does spirituality accure with expencive tea? Does gender have anything to do with assumptions whether tea is healthy or not?
 Now, we're ready to do our MCA with our my_tea1.
 
+*MCA graph 1*
 ```{r}
 mca <- MCA(my_tea1, graph = FALSE)
 
 # summary of the model
 summary(mca)
 
-# visualize MCA
-plot(mca, invisible=c("ind"), habillage="quali")
+# visualize MCA, individual points are invisible showing only variables.
+plot(mca, invisible=c("ind"),  habillage="quali")
 ```
 
-Interpretation:
 
-the forst two dimensions retain 22% of the variance of the data. Whith so low variance retained it is not surprising that the squared correlation between forst 2 dimensions and our variables is at most 0.4 (between dim.1 and friends). There seems to be no strong links between variables and dimensions.
+the first two dimensions retain 22% of the variance of the data. With so low variance retained it is not surprising that the squared correlation between first 2 dimensions and our variables is at most 0.4 (between dim.1 and friends, at categorical variables). This can be seen in our graph, since most of our groups locate to center of the graph showing no strong relation to either of the dimensions. There seems to be no strong links between variables and dimensions.
 
-Tearoom seems to be different from all categories, and has nothing to do with rest of our variables. 
+Nevertheless, we can make some simple interpretations from our data. 
 
-The different groups closest to each other seem to be Not.healthy and Spirituality, and spirituality and females. Women are more likely to be self discribed but at the same time spiritual people don't vote for tea being healthy. Also healthy and not.breakfast seem to be the closest groups to each other. Maybe Those who skip breakfast think tea is so healthy, they don't even need one. Somehow black tea -users are related to high prices of tea, although it is most often not the most expencive sort of tea on the markets (at least in Finland). 
+Regarding dimension 1 and 2, is hard to see clearly separated groups out from the centre. At the centre we can see from the picture that men drink cheap and private label tea and women drink with friends and accosiate tea with health and spirituality.
 
+Also healthy and not.breakfast seem to be the closest groups to each other, but also almost at the zero point between dimensions, showing not great variance between observations. Maybe Those who skip breakfast think tea is so healthy, they don't even need one. 
 
-Interpretation of the results seem a bit far feched. That added to the fact that even at best our dimensions don't reach to even 50% of the variance and there's only little correlation between dimensions and variables, I wouldn't put too much weight on these assumptions.
+Somehow black tea -users are related to high prices of tea, although it is most often not the most expencive sort of tea on the markets (at least in Finland). 
 
-
-Some more plots... What do they mean?
-
+*MCA graph 2*
 ```{r}
 res.mca=MCA(my_tea1)
-plotellipses(res.mca,keepvar=1:4)
+plotellipses(res.mca,keepvar=3)
 
 ```
 
+With our additional graph 2 and its third plot we see that price, tea and tearoom most strongly correlate to dimension 2 and friends to dimension 1. This we can see also from the different categories showing in the first MCA graph: Drinking tea in tearooms, higher prices and black tea are those which are most positively connected to dimension 2 and most negatively correlated to dimension 2 is branded tea. Green tea and not drinking with firends are most positively correlated to dimension 1 and drinking in tearoom and price in general are negatively correlated to dimension 1.
+
+Groups that are close and show highest correlation to dimensions are to be considered the most influential ones. Thus, although interesting, the separation between males and females is not as trustworthy than linking high prices with black tea.
