@@ -9,22 +9,25 @@ output: html_document
 
 *This week we aim to reduce dimensions in order to make the relations in the data more understandable*
 
-##Reduction with continuous variables - Principal component analysis
-First part of our dimensionality reduction conserns with continuous variables. Dimensionality reduction in general aims to find the most essential dimensions than explain the data. Our goal is to find the principal components from the data that explain the data. Hence, the principal component analysis
-###Our data
-This dataset originates from United Nations Development Programme(http://hdr.undp.org/en/content/human-development-index-hdi). It's goal is to compare nations with more sifisticated methods than just looking at GNP - through human capabilities.
+##1. Reduction with continuous variables - Principal component analysis
+
+First part of our dimensionality reduction conserns with continuous variables. Dimensionality reduction in general aims to find the most essential dimensions that explain the data. In Principal Componen Analysis (PCA), we try to find the most essential components (PC1 and PC2) that best explain the data.
+
+###1.1 Our data
+
+This dataset originates from United Nations Development Programme(http://hdr.undp.org/en/content/human-development-index-hdi). Its goal is to compare nations with more sofisticated methods than just looking at GNP - through human capabilities.
 
 *Variables*
-I have created subset with 8 variavles and 155 observations for our purposes. Variables modified from original dataset are Country, sex_edu2, Lab_ratio and GNI. For further infirmation about modifications made, you can see in my github repository: https://github.com/macabset/IODS-project/blob/master/data/create_human.R
+I have created subset with 8 variables and 155 observations for our purposes. Variables modified from original dataset are Country, sex_edu2, Lab_ratio and GNI. For further infirmation about modifications made, you can see in my github repository: https://github.com/macabset/IODS-project/blob/master/data/create_human.R
 
 Underneath are the names of the 8 variables and their description.
 
-Country:      used as rownames
+Country:      used as rownames, regions not included
 
 Sex_edu2:     ratio of females to males in at least secondary education
 Lab-ratio:    ratio of female labour force to male labour force
-Edu_expect:   Expected years of schooling
-Life_expect:  Life xpectancy at birth
+Edu_expect:   Expected years of education
+Life_expect:  Life expectancy at birth
 GNI:          Gross National Income per capita
 Mom_death:    Maternal mortality ratio
 Young_birth:  Adolescent birth rate
@@ -34,10 +37,11 @@ Present_parl: Percentage of female representatives in parliament
 In addition I have excluded missing values from our data set by removing them.
 
 ```{r}
-setwd("C:/Users/Petri/Documents/GitHub/IODS-project/data/")
-human <- read.table("human.csv", sep = ",", header = TRUE)
+getwd()
+human <- read.csv("data/human.csv", sep=",", header= T, row.names = 1)
 str(human)
 dim(human)
+head(human)
 ```
 
 *Summaries*
@@ -45,10 +49,10 @@ dim(human)
 
 ```{r}
 summary(human)
-complete.cases(human)
 ```
 
-All our variables are numeric and continuous (except the couhnty, which is used only as rownames). 
+All our variables are numeric and continuous (except the counrty, which is used only as rownames). 
+###1.2 Picturing human
 
 ```{r}
 library(GGally); library(dplyr); library(corrplot)
@@ -59,15 +63,17 @@ cor(human) %>% corrplot( method="circle", type="upper")
 
 ```
 
-Our correlation plots show that the highest correlation is between Mom_death and Life_expect (-0.86), but closely after are Mom_death and eduexpect, young_birth and Life_expect, Young_birth and Edu_expect. Whith these preliminary results can be assumed that *
+Our correlation plots show that the highest correlation is between Mom_death and Life_expect (-0.86), but closely after are Mom_death and eduexpect, young_birth and Life_expect, Young_birth and Edu_expect.
 
-+1. the higher mothers' mortal rate are the lower the life expectancies at birth. 
+* Whith these preliminary results can be assumed that
 
-+2. the higher the mothers' mortal rate are the lower expected education levels
+  + 1. the higher mothers' mortal rate are the lower the life expectancies at birth. 
 
-+3. the more there are adolescent births the lower life expectancy at birth.
+  + 2. the higher the mothers' mortal rate are the lower expected education levels
 
-+4. and the more there are young people giving births the lower the expected level of education.
+  + 3. the more there are adolescent births the lower life expectancy at birth.
+
+  + 4. and the more there are young people giving births the lower the expected level of education.
 
 ###Principal component analysis
 In Principal Component Analysis(PCA), variables are in a sence reducet to 2 main components that describe the data. At the same time the original variables are left and their relations to principal components can be evaluated.
@@ -168,7 +174,7 @@ The idea is to find out whether these groups have nothing incommon or nothing to
 
 ```{r}
 keep_columns <- c("breakfast", "sex", "price", "healthy", "spirituality", "friends", "Tea", "tearoom")
-my_tea1 <- select(my_tea, one_of(keep_columns))
+my_tea1 <- dplyr::select(my_tea, one_of(keep_columns))
 gather(my_tea1) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
 ```
 Now, we're ready to do our MCA with our my_tea1.

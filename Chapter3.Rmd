@@ -12,9 +12,8 @@ output: html_document
 The data Wrangling part can be seen in my github: https://github.com/macabset/IODS-project/blob/master/data/create_alc.R
 
 ```{r}
-setwd("C:/Users/Petri/Documents/GitHub/IODS-project/data/")
 getwd()
-alc2016 <- read.csv("create_alc.csv")
+alc2016 <- read.csv("data/create_alc.csv",sep=",", header= T)
 head(alc2016)
 ```
 ##Part 2

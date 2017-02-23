@@ -129,10 +129,9 @@ $(document).ready(function () {
 <div id="part-1" class="section level2">
 <h2>Part 1</h2>
 <p>The data Wrangling part can be seen in my github: <a href="https://github.com/macabset/IODS-project/blob/master/data/create_alc.R" class="uri">https://github.com/macabset/IODS-project/blob/master/data/create_alc.R</a></p>
-<pre class="r"><code>setwd(&quot;C:/Users/Petri/Documents/GitHub/IODS-project/data/&quot;)
-getwd()</code></pre>
-<pre><code>## [1] &quot;C:/Users/Petri/Documents/GitHub/IODS-project/data&quot;</code></pre>
-<pre class="r"><code>alc2016 &lt;- read.csv(&quot;create_alc.csv&quot;)
+<pre class="r"><code>getwd()</code></pre>
+<pre><code>## [1] &quot;C:/Users/Murmeli/Documents/GitHub/IODS-project&quot;</code></pre>
+<pre class="r"><code>alc2016 &lt;- read.csv(&quot;data/create_alc.csv&quot;,sep=&quot;,&quot;, header= T)
 head(alc2016)</code></pre>
 <pre><code>##   school sex age address famsize Pstatus Medu Fedu     Mjob     Fjob
 ## 1     GP   F  18       U     GT3       A    4    4  at_home  teacher
