@@ -3,14 +3,14 @@
 #This data is originally from United Nations Development Programme(http://hdr.undp.org/en/content/human-development-index-hdi)
 
 
-#Setting the working directory to my computer:
+#Setting the needed packages and working directory to my computer:
 
 library(Matrix)
 library(ggplot2)
 library(dplyr)
 
-setwd("C:/Users/Petri/Documents/GitHub/IODS-project/data/")
 getwd()
+
 #Read files Human development and gender inequality to R
 
 hd <- read.csv("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/human_development.csv", stringsAsFactors = F)
@@ -78,7 +78,7 @@ human <- read.csv("human.csv", sep=",", header= T)
 str(human)
 
 #This is continuum for last week's data wrangling. We are continuing with the same data.
-#1. mutate data GNi to numeric
+#1. mutate data GNI to numeric
 
 human <- mutate(human, GNI = as.numeric(human$GNI))
 str(human)
@@ -96,8 +96,9 @@ data.frame(human[-1], comp = complete.cases(human))
 human <- filter(human, complete.cases(human))
 complete.cases(human)
 str(human)
+
 #Let's clean the column country and filter regions out
-  #The last 7 rows with column country are infact regions instead of countries.
+#The last 7 rows with column country are infact regions instead of countries.
 last <- nrow(human) - 7
 last
 # I'll choose everything until the last 7 observations, the 155's being Nigeria.
@@ -121,6 +122,4 @@ str(human)
 summary(human)
 complete.cases(human)
 head(human)
-#Why won't the head(human) show countries as rownames when it showed it before making it as csv?
-
 
