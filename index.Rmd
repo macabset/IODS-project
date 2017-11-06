@@ -1,5 +1,6 @@
 ---
 title: "IODS course project"
+author: Maija Absetz
 output:
   html_document:
     theme: sandstone
@@ -9,7 +10,7 @@ output:
     fig_width: 6
     fig_height: 4
     code_folding: hide
-author: Maija Absetz
+
 ---
 
 ***

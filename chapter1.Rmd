@@ -3,4 +3,6 @@
 
 This is an Open Data Science course for analysing and presenting data with R-software.
 
+This year I'm here as a course assistant, and will be doing some modifications to following chapters as we go.
+
 Here is the link to my Github repository, where you can see how all the magic is done: https://github.com/macabset/IODS-project
