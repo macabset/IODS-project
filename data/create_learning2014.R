@@ -1,10 +1,13 @@
 #RStudio exercise 2, take 2
-#Maija Absetz//27.1.2017
+#Maija Absetz//27.1.2017 -> Modified in 6.11.2017 as assistant mode
+#In this exercise we have been provided with a dataset from the course "Johdatus yhteiskuntatilastotieteeseen, syksy 2014".
+
 
 #1. Data Wrangling (max 5p)
 
-#sET THE WOTKING DIRECTORY TO MAKE DATA MORE OPEN
-setwd("C:/Users/Petri/Documents/GitHub/IODS-project/data/")
+#sET THE WOTKING DIRECTORY TO MAKE DATA MORE OPEN -> modified wd, since I have a new computer -> new path
+setwd("C:/Users/murmeli/Documents/murmeli/2017/GitHub/IODS-project/data/") 
+
 getwd()
 
 #1.1 Getting our data to R and exploring its content:
