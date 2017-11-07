@@ -1,0 +1,8 @@
+---
+title: "README"
+author: "Jaakko Kein??nen"
+date: "11/7/2017"
+output: html_document
+---
+This is a course about open data and how to manage and analyse big datasets in R. I dont have practically any previous experience with R so I guess this will be a lot of work.
+https://jaakkoik.github.io/IODS-project/
