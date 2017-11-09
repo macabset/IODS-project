@@ -1,0 +1,4 @@
+9.11.2017
+Assistant Teacher Maija
+
+This is a test file to make Rstudio exc 1, point 4 more understandable and logical. In this test I first saved the file as untitled.Rmd in IODS-project file and after exploring, deleting and writing, saved as README_TEST.Rmd.

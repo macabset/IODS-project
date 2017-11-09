@@ -1,0 +1,4 @@
+9.11.2017
+Assistant Teacher Maija
+
+In this test I saved as README_TEST2.Rmd at the same time as knitting it. I think that way it is more straightforward. Then delete everything and write something of your own.
