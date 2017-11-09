@@ -1,0 +1,4 @@
+9.11.2017
+Assistant Teacher Maija
+
+In test 3 I noticed, that there are 2 steps when saving as. First when creating the file in the first placve (saved as R_CARS), then when knitting to html (README_TEST3.RMd in IODS folder).
