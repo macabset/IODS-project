@@ -23,15 +23,17 @@ head(alc2016)
 dim(alc2016)
 str(alc2016)
 ```
-This is part of Student Alcohol Consumption Data Set, where we have combined Secondary school students` performance on match course and Portuguese language course.The data has been collected 2008 but released 2016. In our combined dataset we have 182 observations and 35 variables. Most of our variables are discrete numeric values, where you can describe the level of agreement of disagreement in scale. 13 of them are two-level vectors, where eight of those are yes/no questions. 
+This is part of Student Alcohol Consumption Data Set, where we have combined Secondary school students` performance on math course and Portuguese language course.The data has been collected 2008 but released 2016. In our combined dataset we have 182 observations and 35 variables. Most of our variables are discrete numeric values, where you can describe the level of agreement of disagreement in scale. 13 of them are two-level vectors, where eight of those are yes/no questions. 
 
 I have created a variable High_use, which  is our only logical vector and it declares high use of alcohol consumption. The high use has been created by modifying the data by making the average of weekday and weekend consumption and stating its high end on high use. The variables in our data used here, but not used for joining the datasets, have been combined by averaging.
 
 ###2.2 Hypothesis - Four variables explaining alcohol consumption
 
-My personal interest will include gender (sex) as a basic variable when discussion about differences in any behaviour. Are boys any different than girls in alcohol behaviour? I believe that the more you care about your studies (studytime) the less you drink. Similarly I think that the more you care about your health the less you use alcohol (health), and lastly I'll pick something to attach family situation (famrel). My hypothesis is the worse you have at home the more you escape to alcohol.
+The point of this excersice is to find variables connected to (high) alcohol consumption. With common sense foreknowledge I will make hypothesis regarding the data and its results.
 
-Sex is a binary factor with options male/female, studytime is a 4-level variable according to evaluation of studytime and health and famrel are likert scale variables based on self evaluation.
+My personal interest will include gender (sex) as a basis variable when discussion about differences in any behaviour. Are boys any different than girls in alcohol consumptionr? I believe that the more you care about your studies (studytime) the less you drink. Similarly I think that the more you care about your health the less you use alcohol (health), and lastly I'll pick something to attach family situation (famrel) to the use of alcohol. My hypothesis is the worse you have at home the more you escape to alcohol.
+
+Sex is a binary factor with options male/female, studytime is a 4-level variable according to subjective evaluation of studytime and health and famrel are likert scale variables based on self evaluation.
 
 ###2.3Exploring our data
 Following figures are as help to explain high use of alcohol regarding our pre-assumptions.
@@ -52,7 +54,7 @@ When looking at our Figure 1, it would seem that males and females have very dif
 ```{r}
 h1 <- ggplot(alc2016, aes( x= high_use, y= famrel, col= sex))
 h2 <- h1 + geom_boxplot()+ ylab("family relations")
-h3 <- h2 + ggtitle("Figure 2. Family relationship by alcohol consumption and sex")
+h3 <- h2 + ggtitle("Figure 2. Family relationship by alcohol consumption and gender")
 h3
 ```
 
@@ -65,13 +67,13 @@ Our figure 2 supports our assumption that with high alcohol consumption you have
 library(GGally)
 library(dplyr)
 i1 <- ggally_facetbar(alc2016, ggplot2::aes(x= health, y= high_use, fill =sex))
-i1 + ggtitle("Figure 3. High use of alcohol by health and sex")
+i1 + ggtitle("Figure 3. High use of alcohol by health and gender")
 ```
 
-Our Figure 3 illustrates how there's all in all less observations in high use of alcohol. When students did use a lot of alcohol, surprisingly high proportions of them state their health "very good". So it would seem that in general, there's more people stating good health if not drinking lot of alcohol, but if you drink a lot of alcohol, you declare a good health more likely than poor health. This was rather surprising, so let's check this result in our logistic regression.
+Our Figure 3 illustrates how many observations there are in both high use of and not high use of alcohol in every level of heatlh (1-5). There is all in all less observations in high use of alcohol than in the upper box not high use of alcohol. When students did state the use of alcohol as high, surprisingly high proportions of them state their health "very good". In general it would seem that there are more people stating good health if not drinking lot of alcohol, but if you drink a lot of alcohol, you declare a good health more likely than poor health. This was rather surprising, so let's explore this result in our logistic regression.
 
 ###2.4 Logistic regression model
-Generally, in simple logistic regression model the target variable is binary: in this case high use of alcohol or no high use of alcohol. So our model predicts what is the probability of health, famrel, sex and studytime of belonging to high use of alcohol.
+Generally, in simple logistic regression model the target variable is binary: in this case high use of alcohol or no high use of alcohol. So our model predicts what is the probability of being a high alcohol user, if person has a certain level of health, famrel, sex and studytime.
 
 ```{r}
 m1 <- glm(high_use ~ health + famrel + sex + studytime, data = alc2016, family = "binomial")
@@ -93,7 +95,11 @@ OR <- coef(m2) %>% exp
 CI <- exp(confint(m2))
 cbind(OR, CI)
 ```
-SexM has the widest gap in confidence intervals.This should mean that there's 95% probability that odds ratio (OR) of the sexM is between 1.2-3.3.The wider the gap the more inaccurate our mean value 2.066 is. The odds for male to have high alcoholic sonsumption is 2 times larger than for females. When considering OR under one, it means that there's bigger probability have high alcoholic consumption when there's less the property famrel, for example. In English: the lower the famrel the higher the consumption of alcohol. This is as predicted in hypothesis.
+In odds ratio, we will copmare high alcohol use with properties famrel, sex and studytime to not high use of alcohol with the same properties. If the odds ratio (or) is higher than 1, then the property (x) is positively associated with high alcoholic use. 
+
+Gender seems to be the only factor to be positively associated with high alcoholic consumption. SexM has the widest gap in confidence intervals.This should mean that there's 95% probability that odds ratio (OR) of the sexM is between 1.2-3.3.The wider the gap the more inaccurate our mean value 2.066 is. The odds for male to have high alcoholic sonsumption is 2 times larger than for females. 
+
+When considering OR under one, it means that there is bigger probability have high alcoholic consumption when there's less the property famrel, for example. In English: the lower the famrel the higher the consumption of alcohol. This is as predicted in hypothesis.
 
 ###2.5 Predictiong power of the model
 Let's see how well our model stands in prediction power when adding new data. In our added data, we predict for every observation what is the likehood of being high alcoholic consumer, using our model 2 as predictioner. Then in order to make it binary, we set the value 0.5: if our model predicts the probability of being high alcoholic consumer more than 0.5, it states High_use as true. Then we compare the prediction to what the actual status of the observation is: is it true that that student is a high consumer if our model predicts so?
@@ -135,7 +141,7 @@ Here we have calculated the loss of our model. 30% is close to our earlier state
 
 ###2.6 Conclusion - how good is our model?
 
-Considering our original hypotheses, I'd say they have some value. The health got discharged at the first phase in our logistic regression: it seems that it has no statistically significant meaning in predicting high use of alcohol. Our regression model 2 supports my original hypothesis: combining the status of your familyrelationship, gender and time you use studying, our model predicts how likely you are to use alcohol 70% of the time correctly. Individually the coefficients works as I theorized: men are more likely to be high consumers than women, the worse your familyrelations are the more likely you are to be a high consumer and the less you use time in your studies the more likely you are a high user of alcohol.
+Considering our original hypotheses, I'd say they have some value. The self evaluated health got discharged at the first phase in our logistic regression: it seems that it has no statistically significant meaning in predicting high use of alcohol. Our regression model 2 supports my original hypothesis: combining the status of your familyrelationship, gender and time you use studying, our model predicts how likely you are to use alcohol 70% of the time correctly. Individually the coefficients works as I theorized: men are more likely to be high consumers than women, the worse your familyrelations are the more likely you are to be a high consumer and the less you use time in your studies the more likely you are a high user of alcohol.
 
 What if we'd guess that when our model gives the prediction, it never guesses right? As you recall, we got 30% error. This means that 70% of the cases when our model guessed a high consumption, there really was high consumption in alcohol use. Now, if it would never guess right, the training error would be 100%. That would mean that everytime our model predicts a person is a high user he/she is not. Then again if our model would be perfect, there would be no such a thing as a training error and everytime our model predicts a high use, we would find that he/she actually was high user in our data.
 
