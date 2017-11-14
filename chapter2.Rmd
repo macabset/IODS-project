@@ -1,4 +1,14 @@
-# Insert chapter 2 title here
+# RStudio Exercise 2
+
+```{r}
+list.files("~/Documents/Jaakon tutkimus/Open data kurssi s2017/GitHub/IODS-project/data")
+students2014 <- read.csv("~/Documents/Jaakon tutkimus/Open data kurssi s2017/GitHub/IODS-project/data/learning2014.csv", header =TRUE, sep = ",")
+
+dim(students2014)
+str(students2014)
+
+```
+# The dataset consists of students??responses to a questionnaire about study habits and attitudes, including also exam points reflecting how succesful they were during a course. It consists of 8 variables, including the id-variable X, gender, age, and variables that describe the students??s attitude and learning styles, and exam points. The data has 166 different students answers in it. 
 
 *Describe the work you have done this week and summarize your learning.*
 
