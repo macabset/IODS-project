@@ -1,4 +1,13 @@
-# RStudio Exercise 2
+---
+title: "RStudio Exercise 2"
+author: Jaakko Keinanen
+date: Nov 15, 2017
+output: html_document
+   
+---
+
+# 1. Description of the data 
+The dataset consists of students responses to a questionnaire about study habits and attitudes, including also exam points reflecting how succesful they were during a course. It consists of 8 variables, including the id-variable X, gender, age, and variables that describe the students attitude and learning styles, and exam points. The data has 166 different students answers in it. 
 
 ```{r}
 list.files("~/Documents/Jaakon tutkimus/Open data kurssi s2017/GitHub/IODS-project/data")
@@ -8,10 +17,42 @@ dim(students2014)
 str(students2014)
 
 ```
-# The dataset consists of students??responses to a questionnaire about study habits and attitudes, including also exam points reflecting how succesful they were during a course. It consists of 8 variables, including the id-variable X, gender, age, and variables that describe the students??s attitude and learning styles, and exam points. The data has 166 different students answers in it. 
+#2. Graphical overview of the data:
+```{r}
+install.packages("ggplot2", repos = "https://ftp.acc.umu.se/mirror/CRAN/")
+library(ggplot2)
+install.packages("GGally", repos = "https://ftp.acc.umu.se/mirror/CRAN/")
+library(GGally)
+p3 <- ggpairs(students2014, mapping = aes(col=gender, alpha=0.3), lower = list(combo = wrap("facethist", bins = 20)))
+p3
+```
+ From the graph we see that exam points correlates most strongly with attitude and the second largest correlation is with strategic learning -variable. From the distributions it is visible that there are some differences between sexes in the distributions, for example men tend to have more attitude points but the differences in most of the variables are not large.
 
-*Describe the work you have done this week and summarize your learning.*
+# 3. The regression model: 
+Dependent variable: points. Independent variable: attitude, gender, stra.
+```{r}
+my_model <- lm(Points ~ Attitude + gender + stra, data = students2014)
+summary(my_model)
+```
+From the summary of the model we see that only Attitude is significant (Pr < 0.05). Gender is the least significant (Pr largest). We run the model again after removing gender from it.
+```{r}
+my_model2 <- lm(Points ~ Attitude + stra, data = students2014)
+summary(my_model2) 
+```
+After removing gender from the model stra is still not significant but the coefficient estimate is slightly larger.
 
-- Describe your work and results clearly. 
-- Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods
-- Assume the reader has no previous knowledge of your data or the more advanced methods you are using  
+4. From the summary of the last model (my_model2) we can interpret that when Attitude points increase by one the exam points increase by 0.35 (the coeffficient estimate is 0.35). When stra points increase by one the exam points increase by 0.91.
+The multiple R squared is 0.20 which shows that 20 % of the variability in the exam scores is explained by the attitude and stra variables.
+
+# 5. Diagnostic plots.
+```{r}
+plot(my_model2, which=c(1, 2, 5))
+```
+QQ-plot shows how the errors in the model are distributed. The errors should be normally distributed for the regression model to be reliable. From the plot it is visible that the circles fit on the line quite well although there is some deviation from the line in both ends. All in all, the errors seem to be normally distributed.  
+
+Residual vs fitted -plot shows how well the data meets the assumption that the size of the errors should not depend on the explanatory variables in the model. When the points are randomly spread on the plot, as they seem to be here, the assumption is usually met
+
+Residuals vs leverage plot shows how big of an impact the outliers get. In the plot, circles in the upper right or lower left corners may be influential outliers. When circles are out of cooks distance the are influential to the regression model. Here all the cases are within cook??s distance so the assumption is met.
+
+
+
