@@ -19,9 +19,7 @@ str(students2014)
 ```
 #2. Graphical overview of the data:
 ```{r}
-install.packages("ggplot2", repos = "https://ftp.acc.umu.se/mirror/CRAN/")
 library(ggplot2)
-install.packages("GGally", repos = "https://ftp.acc.umu.se/mirror/CRAN/")
 library(GGally)
 p3 <- ggpairs(students2014, mapping = aes(col=gender, alpha=0.3), lower = list(combo = wrap("facethist", bins = 20)))
 p3
