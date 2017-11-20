@@ -18,14 +18,14 @@ dim(Boston)
 
 ```
 
-Here is our Boston dataset, which is one of R's own datasets. It consists of Housing values in the suburbs of Boston, USA. It has 14 variables to explain the values of the 506 observations, which consern about the town.
+This week we will use the Boston dataset, which is one of R's own datasets. Above are shown summary, structure and dimensions of the dataset. It consists of Housing values in the suburbs of Boston, USA. It has 14 variables to explain the values of the 506 observations, which consern about the town.
 
 
 
 ```{r}
 summary(Boston)
 ```
-The summary of our 14 variables shows that all but two of our variables are numeric and continuous. We have binary variables chas, which gives 1 if tract is situated by the Charles river, and we also have rad, which gives and index for accesibility for radial highways.
+The summary of our 14 variables shows that all but two of the variables are numeric and continuous. There is binary variables chas, which gives 1 if tract is situated by the Charles river, and there also is rad, which gives and index for accesibility for radial highways.
 
 ###1.1 Visualizing the correlation
 
@@ -36,7 +36,7 @@ cor_matrix
 corrplot(cor_matrix, method="circle", type="upper", cl.pos="b", tl.pos="d", tl.cex=0.6)
 ```
 
-Here we can see correlations between all the variables visualized as pairs. Only the upper side is needed, since it's symmetric. The bigger the dot and stronger the color, the stronger the correlation, too. 
+Above are the correlations between all the variables visualized as pairs. Only the upper side is needed, since it's symmetric. The bigger the dot and stronger the color, the stronger the correlation, too. 
 
 
 * Strong negative correlation seems to be between:
@@ -54,7 +54,7 @@ The strongest positive correlation is between tax and rad (corr. 0.91). The bett
 
 *Scaling the data*
 
-We use scale to standardize ou data. When variables have a common scal, we can calculate distances between means. We also want our new scales as data frame instead of matrix.
+We use scale-function to standardize our data. When variables have a common scale, we can calculate distances between means. We also want our new scales as data frame instead of matrix.
 
 
 ```{r}
@@ -63,13 +63,13 @@ summary(boston_scaled)
 class(boston_scaled)
 boston_scaled<- as.data.frame(boston_scaled)
 ```
-Because we have scaled our data, all observations are between integral 10. Now we can work them as one and see the real distances of these groups. This will help us in the clustering part.
+Because we have scaled our data, all observations are between integral 10. Now we can relate all of them with each other and see the real distances of these groups. This will help us in the clustering part.
 
 ##2. Classification
 
-We are going to divide the data with classification method. This is method where we need to know before hand the groups for discriminating groups, and we will use the crime variable for this. 
+We are going to divide the data with classification method. This is method where we need to know the groups before discriminating groups, and we will use the crime variable for this. 
 
-First we need to adjust our variable and create new crime rates to our crim variable. From scaled Boston dataset we take the continuous variable crim and make it categorical.
+First we need to adjust our chosen variable and create new rates to our crim variable. From scaled Boston dataset we take the continuous variable crim and make it categorical.
 
 ```{r}
 boston_scaled <- scale(Boston)
@@ -85,13 +85,13 @@ boston_scaled <- dplyr::select(boston_scaled, -crim)
 boston_scaled <- data.frame(boston_scaled, crime)
 ```
 
-After our scaling we are able to make new variable crime to our dataset. The crime variable has categories low, med low, med high and high based on quantiles of the crim. So there's 127 observations in the low category, which are all the observations under 25% of all observations in crime. Since the old crim isn't necessary anymore, we can drop that out from our boston scaled.
+After scaling we are able to make new variable crime to our dataset. The crime variable has categories low, med low, med high and high based on quantiles of the crim. So there are 127 observations in the low category, which are all the observations under 25% of all observations in crime. Since the old crim isn't necessary anymore, we can drop that out from our boston scaled.
 
 ###2.1 Linear Discriminant Analysis
 
-No we're just about to use our data to divide our data to classes with Linear Discriminant Analysis(LDA).
+No we're just about to use our data to divide our data to classes with Linear Discriminant Analysis(LDA). LDA is used to find linear combination of features, that separates classes. At the same time it is a variable reduction technique, so instead of variables explaining the target variable, we have dimensions of combined variables. In this case, we will find, what dimensions predict crimes in Boston.
 
-Before we actually can make a model for classification, we have to make sure that we can test how well our model works: That's why we're making train set to create our model and test set to predict our model to the test set. No I'll divide our dataset, so 80% will be used as train set and 20% to test set.
+Before we actually can make a model for classification, we have to make sure that we can test how well our model works: For that we will make a train set to create our model and test set to predict our model to the test set. Next the dataset will be divided, so that 80 % will be used for train set and 20% for test set.
 
 We also want to exclude our crime data from the test dataset, so we can use it as our target variable.
 
@@ -109,9 +109,10 @@ test <- dplyr::select(test, -crime)
 ```
 
 
-In our lda we have crime as target variable against all other variables. Here we obviously use our train set to create the model. Now we're ready to run the LDA, and it should create a model to predict crime rates using all other variables.
-
 ###2.2 Creating the model
+
+In our LDA we have crime as target variable against all other variables. Next we will use our train set to create the model. Now we're ready to run the LDA, and it should create a model to predict crime rates using all other variables.
+
 
 ```{r}
 # linear discriminant analysis
@@ -137,7 +138,7 @@ plot(lda.fit, dimen = 2, col=classes, pch=classes)
 lda.arrows(lda.fit, myscale = 1)
 ```
 
-We want to find out what is the formula to predict crime rate in Boston. THe red arrows in the middle are the variables that are used to find crime rates. (In our original interpretation of the variables the tax and rad had a strong correlation. It seems that the rad arrow is also in very strong role in our lda.) 
+We want to find out what is the formula to predict crime rate in Boston. The red arrows in the middle are the variables that are used to find crime rates. (In our original interpretation of the variables the tax and rad had a strong correlation. It seems that the rad arrow is also in very strong role in our LDA.) 
 
 Now lets use our test set to see if we our model really predicted the crime rates correctly.
 
@@ -152,11 +153,11 @@ table(correct = correct_classes, predicted = lda.pred$class)
 ```
 Here is a cross tabulation with crime categories our model predicted against the real categories from test set.
 
-When the real value was low, the model predicted half of the time to low, but almost as many times to med_low and 2 instances to med_high. Almost same situation is also with med_low: half of the time our model is right and half is not. Then again med high is almost the same in correct observations as in our model and high crime rate is perfectly predicted by our model. So high end of crime rate is definitely better predicted than low end.
+When the real value was low, the model predicted half of the time to low, but almost as many times to med_low and 2 instances to med_high. Almost same situation is also with med_low: half of the time our model is right and half is not. Then again med high is almost the same in correct observations as in our model and high crime rate is nearly perfectly predicted by our model. So high end of crime rate is definitely better predicted than low end.
 
 ##3. Clustering
 
-Now we scale again our data to use it for clustering method. No we are not using crime for the base for classes but guess it with k-means. 
+Now we scale again our data to use it for clustering method. Difference for the LDA is that the classes are not defined before hand. That is, we are not using crime for the base for classes but guess it with k-means. 
 
 Again, we need scaling to make distances measurable. 
 
@@ -170,7 +171,7 @@ boston_scaled2<- as.data.frame(boston_scaled2)
 
 ###3.1 Distances
 
-With clustering we do not know the number of proper classes beforehand, so we need to find them out by using distance method. Now I am using the standard euclidean distance method.
+With clustering we do not know the number of proper classes beforehand, so we need to find them out by using distance method. This time I am using the standard euclidean distance method.
 
 ```{r}
 
@@ -183,7 +184,7 @@ summary(dist_eu)
 ```
 ###3.2 K-means
 
-K-means clusters our observations into certain number of clusters. It clusters by grouping observations to the nearest mean. K-mean tries to find the optimal amount of clusters from the data. With function "pairs" we see a sharp drop when there?s 2 clusters. That seem to be the optimal number of clusters to our data according to k-means method.
+With K-means method, observations are combined into certain number of clusters. It clusters by grouping observations to the nearest mean. K-mean tries to find the optimal amount of clusters from the data. With function "pairs" we see a sharp drop when there is only 2 clusters. That seem to be the optimal number of clusters to our data according to k-means method.
 
 ```{r}
 library(ggplot2); library(GGally)
@@ -213,7 +214,7 @@ ggpairs(boston_scaled2, ggplot2::aes(colour=km))
 
 ##4. Conclusions
 
-In this exercise we had two different methods to divide our data into groups based on their distance. In our first method (Classification), we divided the data by 4 classes of crime rates. It looked like it was quite accurate in the high end of crime but did not predict so well in low and mid low classes of criminality.
+In this exercise we had two different methods to divide our data into groups based on their distance. In our first method (Classification), we divided the data in 4 classes of crime rates. It looked like it was quite accurate in the high end of crime but did not predict so well in low and mid low classes of criminality.
 
 In the second method we used clustering based on no assumption of the classes and tried to use k-means to find those classes. K-means found two classes to be optimal to separate the data, which we can se in our pairs. The only problem is that we do not know without LDA what is the method to separate the two classes,so we do not have a good way of saying if the 2 classes given from k-means are meaningful according the data or not.
 
