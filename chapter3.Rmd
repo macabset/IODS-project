@@ -4,6 +4,7 @@ author: "Jaakko Kein??nen"
 date: "11/21/2017"
 output: html_document
 ---
+#Chapter 3. RStudio Exercise 3
 Read data to "alc" and check the column names.
 ```{r}
 alc <- read.csv("/Users/caroram/Documents/Jaakon tutkimus/Open data kurssi s2017/GitHub/IODS-project/data/create_alc.csv")
