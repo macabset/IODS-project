@@ -1,0 +1,81 @@
+---
+title: "Chapter 3"
+author: "Jaakko Kein??nen"
+date: "11/21/2017"
+output: html_document
+---
+Read data to "alc" and check the column names.
+```{r}
+alc <- read.csv("/Users/caroram/Documents/Jaakon tutkimus/Open data kurssi s2017/GitHub/IODS-project/data/create_alc.csv")
+colnames(alc)
+str(alc)
+```
+Four variables that could be associated with alcohol use and hypotheses: 
+1) sex: boys might drink more alcohol tha girls
+2) age: those who are old enough might drink more
+3) studytime: those who study more might dring less
+4) famrel: those with good family relationships might drink more
+Check distributions and correlations.
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+g1 <- ggplot(data = alc, aes(x = alc_use)) + geom_bar(aes(fill=sex), position="dodge")
+g1
+g2 <- ggplot(data = alc, aes(x = studytime)) + geom_bar()
+g2
+g3 <- ggplot(alc, aes(studytime, alc_use)) + geom_boxplot(aes(group=studytime))
+g3
+
+```
+#logistic regression to predict alcohol high use with preselected 4 variables:
+ 
+First change the studytime and famrel variables as factors (categorical).
+```{r}
+alc$studytime <- factor(alc$studytime)
+alc$famrel <- factor(alc$famrel)
+m <- glm(high_use ~ age + studytime + sex + famrel, data = alc, family = "binomial") 
+summary(m)
+```
+Interpretation: Age is a significant predictor of high use (p<0.05). So is studytime category 3 (compared to category 1 which is not shown). This meand studying 5-10 hours weekly is associated with less high use than studying <2 hours. Category 4 (studying more than 10 hours weekly) was not significantly associated with high use. Male sex increased the probability of high use significantly. Family relations are not associated with high use.
+#Odds ratios and confidence intervals:
+
+```{r}
+OR <- coef(m) %>% exp
+CI<- confint(m) %>% exp
+cbind(OR, CI)
+```
+CI:s of predictors do not include 0. 
+```{r}
+# predict() the probability of high_use
+probabilities <- predict(m, type = "response")
+
+# add the predicted probabilities to 'alc'
+alc <- mutate(alc, probability = probabilities)
+
+# use the probabilities to make a prediction of high_use
+alc <- mutate(alc, prediction = probability>0.5)
+
+# see the last ten original classes, predicted probabilities, and class predictions
+select(alc, studytime, famrel, sex, high_use, probability, prediction) %>% tail(10)
+
+# tabulate the target variable versus the predictions
+table(high_use = alc$high_use, prediction = alc$prediction)
+# initialize a plot of 'high_use' versus 'probability' in 'alc'
+g <- ggplot(alc, aes(x = probability, y = high_use, col=prediction))
+
+# define the geom as points and draw the plot
+g + geom_point()
+
+# tabulate the target variable versus the predictions
+table(high_use = alc$high_use, prediction = alc$prediction) %>% prop.table %>% addmargins()
+# define a loss function (mean prediction error)
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+# call loss_func to compute the average number of wrong predictions in the (training) data
+loss_func(class = alc$high_use, prob = alc$probability)
+```
+
