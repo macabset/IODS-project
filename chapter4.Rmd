@@ -3,17 +3,15 @@
 
 The dataset Boston has 506 observations and 14 variables. It is about housing values in sub-urbs of Boston and contains information about, for example, crime rate, nitrogen oxide concentrations, pupil teacher ratio in different towns.
 ```{r}
-install.packages("MASS")
 library(MASS)
-install.packages("corrplot")
 library(corrplot)
-install.packages("tidyverse")
 library(tidyverse)
 library(dplyr)
 data("Boston")
 str(Boston)
 dim(Boston)
 ```
+
 ```{r}
 pairs(Boston)
 summary(Boston)
@@ -105,5 +103,26 @@ The model predicts correctly 52% of low cases, 63% of med_low, 58% of med_high a
 data("Boston")
 summary(Boston)
 boston_scaled <- scale(Boston)
+
+#Calculate the distances between the observations
+dist_eu <- dist(Boston)
+summary(dist_eu)
+```
+```{r}
+# k-means clustering with 4 centers
+km <-kmeans(Boston, centers = 4)
+# plot the Boston dataset with clusters
+pairs(Boston, col = km$cluster)
+```
+```{r}
+#Reducing the number of pairs in the plot
+pairs(Boston[1:5], col=km$cluster)
+pairs(Boston[6:10], col = km$cluster)
+```
+```{r}
+#Let´s try 2 centers
+km <-kmeans(Boston, centers = 2)
+pairs(Boston[1:5], col = km$cluster)
+pairs(Boston[6:10], col = km$cluster)
 ```
 
