@@ -24,10 +24,13 @@ cor_matrix
 # visualize the correlation matrix
 corrplot(cor_matrix, method="circle", type = "upper", cl.pos="b", tl.pos="d", tl.cex=0.6)
 ```
+
 From the above correlation matrix: home value (medv) has a strong negative correlation with lower status of the population (lstat, red circle) and a strong positive correlation with average number of rooms per dwelling (rm, blue circle).
 ```{r}
 hist(Boston$medv)
 ```
+
+
 From the histogram: the distribution of housing value is right-skewed.
 
 The scaled variables all have mean of 0.0.
